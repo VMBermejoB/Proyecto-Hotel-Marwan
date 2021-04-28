@@ -1,0 +1,116 @@
+html{
+    margin:0;
+    padding: 0;
+}
+body{
+    font-size: 16px;
+    margin:0;
+    padding: 0;
+    background-image: url("imagenes/fondo.jpg");
+    background-size: cover;
+    width: 100%;
+}
+/*Elementos de 2 nivel*/
+
+#logo{
+    padding-top:0.5em ;
+    margin:0 auto;
+    width: 100px;
+    height: 75px;
+}
+
+img{
+    width: 100%;
+}
+nav
+{
+    position: fixed;
+    right: 0;
+    left:0 ;
+    top: 0;
+    background:#011D40;
+    width: 100%;
+    color:white;
+    margin:0 !important;
+
+}
+nav div{
+    margin:0 auto;
+}
+nav a
+{
+    margin:0 auto;
+    color:white;
+    text-decoration:none;
+}
+#contenedor{
+    margin:7em 10%;
+    color:#444;
+}
+
+.imagenes{
+    width: 500px;
+}
+#contenedor div{
+    margin-top:2em;
+}
+/*#donde{*/
+/*    margin-top:3.75em;*/
+/*}*/
+footer{
+    padding: 1.5em 0 2.5em;
+    background-color: #e9e9e9;
+    color:#444;
+    font-style:italic;
+}
+.logo2{
+    width: 250px;
+    margin: 0 auto;
+}
+/*.logo2 img{*/
+/*    width: 100%;*/
+/*}*/
+footer h5, footer p {
+    text-align: center;
+    margin: 0 auto;
+}
+#pie{
+    line-height: 1.5em;
+    margin: 0 auto;
+}
+
+form
+{
+    border-radius: 10px;
+    text-align: center;
+    width:600px;
+    margin: auto;
+    background-color:#011d40;
+    color:whitesmoke;
+    font-weight:bold;
+    font-style:italic;
+    font-size:1.3rem;
+    padding:30px;
+}
+input
+{
+    margin:1.5em auto;
+    text-align: center;
+    padding:10px;
+    border:1px solid #3A4FE6;
+    display: block;
+}
+
+
+input[type=submit] {
+
+    margin-top: 20px;
+    padding: 5px;
+    background-color: #3A4FE6;
+    color: white;
+    border-radius: 5px;
+}
+
+
+
+
