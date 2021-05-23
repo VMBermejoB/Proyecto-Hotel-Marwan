@@ -1,5 +1,5 @@
 <?php
-    /*
+    /**
      * Comprueba que se ha iniciado sesión con perfil trabajador
      */
     session_start();
@@ -44,7 +44,7 @@
 require_once  'metodos.php';
 $objMetodos=new metodos();
 
-    /*
+    /**
      * Extrae el tipo de la tabla tipos según el tipo seleccionado para modificar
      */
 $consulta=
@@ -53,7 +53,7 @@ $consulta=
             WHERE idTipo= ".$_GET["idTipo"]."
     ";
 $objMetodos->realizarConsultas($consulta);
-    /*
+    /**
      * Comprueba si ha encontrado algún resultado para mostrar el formulario
      */
 if ($objMetodos->comprobarSelect()>0)
@@ -85,7 +85,7 @@ if ($objMetodos->comprobarSelect()>0)
             ';
 
        if(isset($_POST["enviar"])){
-           /*
+           /**
             * Realiza el update para modificar los datos del tipo seleccionado
             */
            $consulta=
@@ -123,14 +123,14 @@ if ($objMetodos->comprobarSelect()>0)
     </main>
 </div>
 <script>
-    /*
+    /**
     * Valida los campos del formulario
     */
     function validacion()
     {
         let nombre = document.getElementById("nombre").value;
         let nombreBD = document.getElementById("nombreBD").value;
-        /*
+        /**
         * Comprueba si el nombre inroducido en el formulario coincide con alguno de la base de datos
         */
         if(nombre==nombreBD)
