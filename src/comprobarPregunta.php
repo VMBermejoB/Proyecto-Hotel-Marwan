@@ -1,7 +1,7 @@
 <?php
 require_once 'metodos.php';
 $objMetodos = new metodos();
-    /*
+    /**
      * Consulta para comprobar que la respuesta es correcta
      */
 $correo=$_GET["correo"];

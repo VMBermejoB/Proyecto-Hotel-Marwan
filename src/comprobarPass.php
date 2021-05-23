@@ -2,7 +2,7 @@
     session_start();
     require_once 'metodos.php';
     $objMetodos = new metodos();
-    /*
+    /**
     * Consulta para comprobar si la pass que se le pasa por URL es correcta
     */
     $pass1=$_GET["pass1"];

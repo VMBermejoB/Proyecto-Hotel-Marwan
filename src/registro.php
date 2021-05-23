@@ -2,7 +2,8 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Registro</title>
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.1/dist/umd/popper.min.js" integrity="sha384-SR1sx49pcuLnqZUnnPwx6FCym0wLsk5JZuNx2bPPENzswTNFaQU1RDvt3wT4gWFG" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.min.js" integrity="sha384-j0CNLUeiqtyaRmlzUHCPZ+Gy5fQu0dQ6eZ/xAww941Ai1SxSY+0EQqNXNE6DZiVc" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js" integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf" crossorigin="anonymous"></script>
@@ -15,12 +16,12 @@
 <body>
 
 <nav class="row">
-    <div class="col-1 d-flex align-items-center"><a href="#">Quienes Somos</a></div>
-    <div class="col-1 d-flex align-items-center"><a href="#">Noticias</a></div>
-    <div class="col-1 d-flex align-items-center"><a href="#">Habitaciones</a></div>
-    <div class="col-1 d-flex align-items-center"><a href="registro.php"> Registro</a></div>
-    <div class="col-1 d-flex align-items-center"><a href="iniciosesion.php">Inicio Sesión</a></div>
-    <div id="logo" class="col-auto offset-auto">
+    <div class="col-12 col-sm-1 d-flex align-items-center"><a href="#">Quienes Somos</a></div>
+    <div class="col-12 col-sm-1 d-flex align-items-center"><a href="#">Noticias</a></div>
+    <div class="col-12 col-sm-1 d-flex align-items-center"><a href="#">Habitaciones</a></div>
+    <div class="col-12 col-sm-1 d-flex align-items-center"><a href="registro.php"> Registro</a></div>
+    <div class="col-12 col-sm-1 d-flex align-items-center"><a href="iniciosesion.php">Inicio Sesión</a></div>
+    <div id="logo" class="col-auto offset-auto d-none d-sm-block">
         <img src="imagenes/logo2.PNG">
     </div>
 </nav>
@@ -33,7 +34,7 @@
                     <?php
                         require 'procesosApp.php';
                         $objProcesos=new procesosApp();
-                    /*Formulario de registro*/
+                    /**Formulario de registro*/
                     echo '<form method="post" onsubmit="return validacion()" action="'.$objProcesos->registro().'" class="col-10">';
                     ?>
                         <h1>REGISTRO</h1><br>
@@ -108,11 +109,11 @@
 
 
 <script>
-    /*
+    /**
     *Validaciones del formulario de registro
      */
     function validacion(){
-        /*
+        /**
         *Validaciones campos vacíos
          */
         let nombre = document.getElementById("nombre").value;
@@ -145,7 +146,7 @@
             alert("Introduce todos los datos");
             return false;
         }
-        /*
+        /**
         *Validación correo correcto
          */
         if(/^[67]\d{8}$/.test(tlfno)===false)
@@ -153,14 +154,14 @@
             alert("Introduce el teléfono correctamente");
             return false;
         }
-        /*
+        /**
         *Validación para ver si las contraseñas son iguales
          */
         if(pass!==pass2){
             alert("Las contraseñas no coinciden");
             return false;
         }
-        /*
+        /**
         *Comprobación de correo para ver si está repetido
          */
         var val=0;

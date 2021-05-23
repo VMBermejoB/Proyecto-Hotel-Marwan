@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Recuperar contraseña</title>
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.1/dist/umd/popper.min.js" integrity="sha384-SR1sx49pcuLnqZUnnPwx6FCym0wLsk5JZuNx2bPPENzswTNFaQU1RDvt3wT4gWFG" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.min.js" integrity="sha384-j0CNLUeiqtyaRmlzUHCPZ+Gy5fQu0dQ6eZ/xAww941Ai1SxSY+0EQqNXNE6DZiVc" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js" integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf" crossorigin="anonymous"></script>
@@ -13,12 +14,12 @@
 </head>
 <body>
     <nav class="row">
-        <div class="col-1 d-flex align-items-center"><a href="#">Quienes Somos</a></div>
-        <div class="col-1 d-flex align-items-center"><a href="#">Noticias</a></div>
-        <div class="col-1 d-flex align-items-center"><a href="#">Habitaciones</a></div>
-        <div class="col-1 d-flex align-items-center"><a href="#"> Actividades</a></div>
-        <div class="col-1 d-flex align-items-center"><a href="iniciosesion.php">Inicio Sesión</a></div>
-        <div id="logo" class="col-auto offset-auto">
+        <div class="col-12 col-sm-1 d-flex align-items-center"><a href="#">Quienes Somos</a></div>
+        <div class="col-12 col-sm-1 d-flex align-items-center"><a href="#">Noticias</a></div>
+        <div class="col-12 col-sm-1 d-flex align-items-center"><a href="#">Habitaciones</a></div>
+        <div class="col-12 col-sm-1 d-flex align-items-center"><a href="#"> Actividades</a></div>
+        <div class="col-12 col-sm-1 d-flex align-items-center"><a href="iniciosesion.php">Inicio Sesión</a></div>
+        <div id="logo" class="col-auto offset-auto d-none d-sm-block">
             <img src="imagenes/logo2.PNG">
         </div>
         </nav>
@@ -27,7 +28,7 @@
     require_once 'procesosApp.php';
     $objMetodos=new metodos();
     $objProcesos=new procesosApp();
-    /*
+    /**
      * Muestra el primer formulario
      */
     if(!isset($_POST["enviar"]) and !isset($_POST["enviar2"])){
@@ -52,7 +53,7 @@
     }
     else
     {
-        /*
+        /**
          * Si se ha enviado el primer formulario, extrae la pregunta secreta y muestra el segundo formulario
          */
         $correo=$_POST["correo"];
@@ -67,7 +68,7 @@
             if ($fila = $resultado->fetch_array()) {
              if(isset($_POST["enviar"]) and !isset($_POST["enviar2"]))
             {
-                /*
+                /**
                  * Segundo formulario en el que se comprueba la respuesta de la pregunta
                  */
                 echo
@@ -96,7 +97,7 @@
 </body>
 </html>
 <script>
-    /*
+    /**
     *Comprobación del campo correo del primer formulario
      */
     function validacion()
@@ -129,7 +130,7 @@
             return false;
         }
     }
-    /*
+    /**
     *Comprueba si la respuesta que escribe el usuario es correcta
      */
     function comprobarPregunta()

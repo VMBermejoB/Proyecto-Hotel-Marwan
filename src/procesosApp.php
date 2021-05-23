@@ -8,7 +8,7 @@ class procesosApp
         $this->objMetodos = new metodos();
 
     }
-/*
+/**
  * Funciones del inicio de sesión
  */
 
@@ -30,11 +30,11 @@ class procesosApp
                 return false;
             }
         }
-//        alert("Usuario o contraseña incorrectps");
+
         return false;
     }
 
-    /*
+    /**
      * Funciones del registro
      */
     function registro()
@@ -59,7 +59,7 @@ class procesosApp
             }
         }
     }
-    /*
+    /**
      * Modificar usuario
      */
 
@@ -88,7 +88,7 @@ class procesosApp
 
         }
     }
-    /*
+    /**
      * Modificar contraseña
      */
     function modificarPass(){
@@ -114,7 +114,7 @@ class procesosApp
             }
         }
     }
-    /*
+    /**
      * Baja de usuario
      */
     function bajaUsuario(){
@@ -135,6 +135,9 @@ class procesosApp
 
             $anio=$_POST["anio"];
 
+            /**
+             * Conversión de formatos de fechas
+             */
             $tfIn1=explode("/", $_POST["fIn1"]);
             $fIn1=$tfIn1[2]."-".$tfIn1[1]."-".$tfIn1[0];
             $fIn1 = date_create($fIn1);
@@ -169,7 +172,10 @@ class procesosApp
             $nombre1="Baja";
             $nombre2="Alta";
             $nombre3="Media";
-//
+
+            /**
+             * Inserción de datos de las temporadas en la base de datos
+             */
             $sentencia = $this->objMetodos->mysqli->prepare("INSERT INTO temporada(nombre, fInicioTemp, fFinTemp, anio) VALUES (?,?,?,?);");
             $sentencia->bind_param("ssss", $nombre1, $fIn1, $fFin1, $anio);
             $sentencia->execute();
@@ -230,10 +236,110 @@ class procesosApp
                 header("Location:anadirTipo.php");
             }
 
+            }
+        }
+
+        function reserva(){
+
+            if(isset($_POST["enviar3"])){
+
+                /**
+                 * Obtención de datos del usuario para incluirlos en el pdf
+                 */
+
+                $consulta="SELECT nombre, correo, tlfno FROM usuarios WHERE idUsuario=".$_SESSION["id"];
+
+                $this->objMetodos->realizarConsultas($consulta);
+                $fila=$this->objMetodos->extraerFilas();
+
+                $precios=$_POST["precios"];
+
+                $total=$_POST["total"];
+
+                $num=$_POST["num"];
+
+                $habitaciones=$_POST["habitaciones"];
+
+                /**
+                 * Creación de pdf
+                 */
+
+
+                require('fpdf/fpdf.php');
+                $pdf = new FPDF();
+                $pdf->AddPage();
+                $pdf->SetFont('Arial','I',16);
+
+                $pdf->Image('imagenes/logo3.PNG',70,10,-150);
+
+                $texto1="Nombre: ".$fila[0]."\nCorreo: ".$fila[1]."\nTeléfono: ".$fila[2]."\nFecha de inicio de la reserva: ".$_POST["fIn"]."\nFecha de fin de la reserva: ".$_POST["fFin"] ;
+                $pdf->SetXY(25, 50);
+                $pdf->MultiCell(155,10,$texto1,1,"L");
+
+                $pdf->SetFont('Arial','I',16);
+
+                $pdf->SetXY(45, 120);
+                $pdf->SetFillColor(1,29,64);
+                $pdf->SetTextColor(255,255,255);
+                $pdf->Cell(80,10,"Habitación",1,0,"C",true);
+                $pdf->Cell(30,10,"Precio",1,1,"C",true);
+
+                $pdf->SetTextColor(0,0,0);
+
+                for($i=0;$i<$num;$i++){
+                    $pdf->SetX(45);
+                    $pdf->Cell(80,10,$habitaciones[$i],1,0,"C");
+                    $pdf->Cell(30,10,$precios[$i]."€",1,1,"C");
+                }
+
+                $pdf->SetTextColor(255,255,255);
+                $pdf->SetXY(45, 140+(10*$i));
+                $pdf->Cell(80,10,"Precio Total",1,0,"C",true);
+                $pdf->SetTextColor(0,0,0);
+                $pdf->Cell(30,10,$total."€",1,0,"C");
+                /**
+                 * Inserción de las reservas en la base de datos
+                 */
+                ob_end_clean();
+                $pdf->Output("D","DatosReserva.pdf");
+
+                $tfIn=explode("/", $_POST["fIn"]);
+                $fIn=$tfIn[2]."-".$tfIn[1]."-".$tfIn[0];
+                $fIn = date_create($fIn);
+                $fIn = date_format($fIn , 'Y-m-d');
+
+                $tFin=explode("/", $_POST["fFin"]);
+                $fFin=$tFin[2]."-".$tFin[1]."-".$tFin[0];
+                $fFin = date_create($fFin);
+                $fFin = date_format($fFin , 'Y-m-d');
+
+                $sentencia = $this->objMetodos->mysqli->prepare("INSERT INTO reservas(fInicio, fFin, idUsuario) VALUES (?,?,?);");
+                $sentencia2=$this->objMetodos->mysqli->prepare("INSERT INTO reservashab(idReserva, numHabitacion, precioRes) VALUES (?,?,?);");
+
+                /**
+                 * Inserción de datos en la tabla reservas
+                 */
+
+                $sentencia->bind_param("ssi", $fIn, $fFin, $_SESSION["id"]);
+                $sentencia->execute();
+
+                $idReserva=$sentencia->insert_id;
+
+                /**
+                 * Inserción de datos en la tabla reservashab
+                 */
+                for($i=0;$i<$num;$i++){
+
+                    $sentencia2->bind_param("isi", $idReserva, $habitaciones[$i], $precios[$i]);
+                    $sentencia2->execute();
+                }
+
+
 
 
 
             }
+
         }
 
 

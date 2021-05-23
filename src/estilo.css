@@ -1,9 +1,12 @@
+/*
+* Tamaño base 1400px;
+ */
 html{
     margin:0;
     padding: 0;
 }
 body{
-    font-size: 16px;
+    font-size: 15px;
     margin:0;
     padding: 0;
     background-image: url("imagenes/fondo.jpg");
@@ -32,6 +35,7 @@ nav
     width: 100%;
     color:white;
     margin:0 !important;
+    z-index: 4;
 
 }
 nav div{
@@ -83,7 +87,7 @@ form
 {
     border-radius: 10px;
     text-align: center;
-    width:600px;
+    width:55%;
     margin: auto;
     background-color:#011d40;
     color:whitesmoke;
@@ -100,7 +104,6 @@ input
     border:1px solid #3A4FE6;
     display: block;
 }
-
 
 input[type=submit] {
 
@@ -131,6 +134,29 @@ button a{
 button a:hover{
     color: white;
 }
+/**
+* Estilos de hoja resumen de la reserva
+ */
+#hojaresumen{
+    background-color: white;
+    color:black;
+}
+#hojaresumen h3, #hojaresumen h4{
+    font-weight: bold;
+    color:#011d40;
+}
+#hojaresumen label{
+    font-weight: normal;
+    color:#3A4FE6;
+}
+#hojaresumen input[type=text]{
+   border: none;
+}
+/*#total{*/
+/*    font-weight: bold;*/
+/*}*/
+
+
 
 /*
 * Estilos de mensaje de verificación
@@ -148,11 +174,57 @@ form table td, form table th
 {
     color: whitesmoke;
 }
-
+table{
+    width: 100%;
+}
 td div{
     margin: 0 !important;
 }
+/*
+* Estilos del carrusel
+ */
 
+.habitacion
+{
+    border: #011d40 solid 2px;
+    padding-bottom: 2em;
+}
+#carousel
+{
+    margin-bottom: 1.6em;
+}
+
+/*
+* Medias queryes
+ */
+
+@media (max-width: 720px){
+    body{
+        font-size: 13px !important;
+    }
+
+    form{
+        width: 100%;
+        font-size: 13px !important;
+    }
+}
+
+@media (max-width: 576px){
+    nav{
+        background-color: white;
+    }
+    nav div{
+        padding:1%;
+        display: block;
+        margin:0.3125em 0;
+        width: 100%;
+        background-color: #012340;
+    }
+    #contenedor{
+        margin:15em 10%;
+        color:#444;
+    }
+}
 
 
 

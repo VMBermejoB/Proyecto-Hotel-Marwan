@@ -11,7 +11,8 @@
 <head>
 
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Usuario</title>
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.1/dist/umd/popper.min.js" integrity="sha384-SR1sx49pcuLnqZUnnPwx6FCym0wLsk5JZuNx2bPPENzswTNFaQU1RDvt3wT4gWFG" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.min.js" integrity="sha384-j0CNLUeiqtyaRmlzUHCPZ+Gy5fQu0dQ6eZ/xAww941Ai1SxSY+0EQqNXNE6DZiVc" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js" integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf" crossorigin="anonymous"></script>
@@ -25,16 +26,16 @@
 <body>
 
 <nav class="row">
-    <div class="col-1 d-flex align-items-center"><a href="#">Quienes Somos</a></div>
-    <div class="col-1 d-flex align-items-center"><a href="#">Noticias</a></div>
-    <div class="col-1 d-flex align-items-center"><a href="#">Habitaciones</a></div>
-    <div class="col-1 d-flex align-items-center"><a href="#"> Actividades</a></div>
-    <div class="col-1 d-flex align-items-center"><a href="inicio.php">Inicio Sesión</a></div>
-    <div id="logo" class="col-auto offset-auto">
+    <div class="col-12 col-sm-1 d-flex align-items-center"><a href="#">Quienes Somos</a></div>
+    <div class="col-12 col-sm-1 d-flex align-items-center"><a href="#">Noticias</a></div>
+    <div class="col-12 col-sm-1 d-flex align-items-center"><a href="#">Habitaciones</a></div>
+    <div class="col-12 col-sm-1 d-flex align-items-center"><a href="#"> Actividades</a></div>
+    <div class="col-12 col-sm-1 d-flex align-items-center"><a href="inicio.php">Inicio Sesión</a></div>
+    <div id="logo" class="col-auto offset-auto d-none d-sm-block">
         <img src="imagenes/logo2.PNG">
     </div>
 </nav>
-<!--    En el siguiente div es donde va toda la magia-->
+
 <div class="containter" >
     <main class="row" id="contenedor">
 
@@ -48,13 +49,13 @@
                     $objConexion=new metodos();
 
                     echo '<form method="post" onsubmit="return validacion()" action="'.$objProcesos->modificarUsuario().'">';
-            /*
+            /**
              * Consulta para extraer los datos del usuario que se mostrarán por defecto en el formulario de modificación de datos de usuario
              */
                     $consulta="SELECT nombre, correo, tlfno FROM usuarios WHERE idUsuario=".$_SESSION["id"];
                     $objConexion->realizarConsultas($consulta);
                     $filas=$objConexion->extraerFilas();
-                /*
+                /**
                  * Formulario de modificación de datos del usuario
                  */
 
@@ -85,7 +86,7 @@
             <div class="col-12">
 
                 <?php
-                /*
+                /**
                * Formulario para la modificación de contraseñas
                */
                      echo '<form method="post" onsubmit="return validarPass()" action="'.$objProcesos->modificarPass().'">';
@@ -109,7 +110,7 @@
             </div>
             <div class="col-12">
                 <?php
-                /*
+                /**
                  * Formulario para la baja de usuario
                  */
                 echo '<form method="post" onsubmit="return validarPass2()" action="'.$objProcesos->bajaUsuario().'">';
@@ -152,7 +153,9 @@
 
 <!--Validaciones de los campos del formulario-->
 <script>
-    /*Validaciones para el formulario de modificación de datos*/
+    /**
+     * Validaciones para el formulario de modificación de datos
+     */
     function validacion(){
 
         let correoAct = document.getElementById("correo2").value;

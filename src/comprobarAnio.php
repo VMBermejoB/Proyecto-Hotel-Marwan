@@ -1,5 +1,5 @@
 <?php
-    /*
+    /**
      * Consulta para comprobar si el año que se ha introducido existe
      */
     require_once 'metodos.php';

@@ -2,7 +2,8 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Inicio</title>
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.1/dist/umd/popper.min.js" integrity="sha384-SR1sx49pcuLnqZUnnPwx6FCym0wLsk5JZuNx2bPPENzswTNFaQU1RDvt3wT4gWFG" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.min.js" integrity="sha384-j0CNLUeiqtyaRmlzUHCPZ+Gy5fQu0dQ6eZ/xAww941Ai1SxSY+0EQqNXNE6DZiVc" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js" integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf" crossorigin="anonymous"></script>
@@ -14,7 +15,7 @@
 <?php
 session_start();
 
-    /*
+    /**
      * Compruba si se ha iniciado sesión
      */
 
@@ -23,11 +24,11 @@ session_start();
         echo
         '
             <nav class="row">
-                <div class="col-1 d-flex align-items-center"><a href="#">Quienes Somos</a></div>
-                <div class="col-1 d-flex align-items-center"><a href="#">Noticias</a></div>
-                <div class="col-1 d-flex align-items-center"><a href="#">Habitaciones</a></div>
-                <div class="col-1 d-flex align-items-center"><a href="registro.php"> Registro</a></div>
-                <div class="col-1 d-flex align-items-center"><a href="iniciosesion.php">Inicio Sesión</a></div>
+                <div class="col-12 col-sm-1 d-flex align-items-center"><a href="#">Quienes Somos</a></div>
+                <div class="col-12 col-sm-1 d-flex align-items-center"><a href="#">Noticias</a></div>
+                <div class="col-12 col-sm-1 d-flex align-items-center"><a href="#">Habitaciones</a></div>
+                <div class="col-12 col-sm-1 d-flex align-items-center"><a href="registro.php"> Registro</a></div>
+                <div class="col-12 col-sm-1 d-flex align-items-center"><a href="iniciosesion.php">Inicio Sesión</a></div>
                 <div id="logo" class="col-auto offset-auto">
                     <img src="imagenes/logo2.PNG">
                 </div>
@@ -36,21 +37,21 @@ session_start();
     }
     else
     {
-        /*
+        /**
          * Comprueba si el usuario es un usuario normal
          */
-        if($_SESSION["perfil"]=='u')
+        if($_SESSION["perfil"]=='u' || $_SESSION["perfil"]=='t')
         {
             echo
             '
                 <nav class="row">
-                    <div class="col-1 d-flex align-items-center"><a href="#">Quienes Somos</a></div>
-                    <div class="col-1 d-flex align-items-center"><a href="#">Noticias</a></div>
-                    <div class="col-1 d-flex align-items-center"><a href="#">Habitaciones</a></div>
-                    <div class="col-1 d-flex align-items-center"><a href="#"> Actividades</a></div>
-                    <div class="col-1 d-flex align-items-center"><a href="gestionUsuarios.php">Gestión de usuario</a></div>
-                    <div class="col-1 d-flex align-items-center"><a href="cerrarsesion.php">Cerrar Sesion</a></div>
-                    <div id="logo" class="col-auto offset-auto">
+                    <div class="col-12 col-sm-1 d-flex align-items-center"><a href="#">Quienes Somos</a></div>
+                    <div class="col-12 col-sm-1 d-flex align-items-center"><a href="#">Noticias</a></div>
+                    <div class="col-12 col-sm-1 d-flex align-items-center"><a href="#">Habitaciones</a></div>
+                    <div class="col-12 col-sm-1 d-flex align-items-center"><a href="#"> Actividades</a></div>
+                    <div class="col-12 col-sm-1 d-flex align-items-center"><a href="gestionUsuarios.php">Gestión usuario</a></div>
+                    <div class="col-12 col-sm-1 d-flex align-items-center"><a href="cerrarsesion.php">Cerrar Sesion</a></div>
+                    <div id="logo" class="col-auto offset-auto d-none d-sm-block">
                         <img src="imagenes/logo2.PNG">
                     </div>
                 </nav>
@@ -58,12 +59,12 @@ session_start();
         }
     }
 ?>
-<!--    En el siguiente div es donde va toda la magia-->
+
     <div class="containter" >
         <main class="row" id="contenedor">
 
             <article class="row">
-                <div class="col-7">
+                <div class="col-12 col-lg-7">
                     <h1>
                         BIENVENIDOS!
                     </h1>
@@ -83,15 +84,15 @@ session_start();
                         hijo Max Prestanizzi su esposa Mariangela Carezzi con un grupo profesional de esperiencia en trabajo de la hosteleria y restauracion
                     </p>
                 </div>
-                <div class="col-5 imagenes">
+                <div class="col-12 col-lg-5 imagenes">
                     <img src="imagenes/hotel2.jpg">
                 </div>
 
                 <div id="donde" class="row">
-                    <div class="col-5">
-                        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2798.5870408708693!2d10.633891015557214!3d45.45797717910085!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x4781eb0e4a320b05%3A0xb41a5845027847b5!2sHotel%20Dogana!5e0!3m2!1ses!2ses!4v1618657893185!5m2!1ses!2ses" width="500" height="200" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
+                    <div class="col-12 col-lg-5">
+                        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2798.5870408708693!2d10.633891015557214!3d45.45797717910085!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x4781eb0e4a320b05%3A0xb41a5845027847b5!2sHotel%20Dogana!5e0!3m2!1ses!2ses!4v1618657893185!5m2!1ses!2ses" width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
                     </div>
-                    <div class="col-7">
+                    <div class="col-12 col-lg-7">
                         <p>
                         <h2>Donde Estamos</h2>
                         Nos encontramos en una posicion inmejorable para disfrutar del maravilloso Lago di Garda,
@@ -104,7 +105,7 @@ session_start();
                     </div>
                 </div>
                 <div id="servicios" class="row">
-                    <div class="col-7">
+                    <div class="col-12 col-lg-7">
                         <h2>Servicios</h2>
                         <ul>
                             <li>En Nuestra estructura Tenemos una gran variedad de servicios para nuestros clientes:</li>
@@ -121,7 +122,7 @@ session_start();
                             <li>Cata de Vinos de la Zona</li>
                         </ul>
                     </div>
-                    <div class="col-5 imagenes">
+                    <div class="col-12 col-lg-5 imagenes">
                         <img src="imagenes/sala.jpg">
                     </div>
 

@@ -1,5 +1,5 @@
 <?php
-/*
+/**
  * Consulta para comprobar si el correo que se le pasa por URL existe
  */
     require_once 'metodos.php';

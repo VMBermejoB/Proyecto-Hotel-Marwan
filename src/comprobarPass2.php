@@ -3,7 +3,7 @@
     require_once 'metodos.php';
     $objMetodos = new metodos();
 
-    /*
+    /**
     * Consulta para comprobar si la pass que se le pasa por URL es correcta
     */
 

@@ -1,5 +1,5 @@
 <?php
-    /*
+    /**
     * Comprueba que se ha iniciado sesión con perfil trabajador
     */
     session_start();
@@ -12,6 +12,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Temporadas</title>
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.1/dist/umd/popper.min.js" integrity="sha384-SR1sx49pcuLnqZUnnPwx6FCym0wLsk5JZuNx2bPPENzswTNFaQU1RDvt3wT4gWFG" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.min.js" integrity="sha384-j0CNLUeiqtyaRmlzUHCPZ+Gy5fQu0dQ6eZ/xAww941Ai1SxSY+0EQqNXNE6DZiVc" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js" integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf" crossorigin="anonymous"></script>
@@ -24,13 +25,13 @@
 </head>
 <body>
 <nav class="row">
-    <div class="col-1 d-flex align-items-center"><a href="consultarTemporadas.php">Gestion Temporada</a></div>
-    <div class="col-1 d-flex align-items-center"><a href="#">Gestion Tipo De Habitacion</a></div>
-    <div class="col-1 d-flex align-items-center"><a href="#">Gestion Habitaciones </a></div>
-    <div class="col-1 d-flex align-items-center"><a href="#"> Gestion Ofertas</a></div>
-    <div class="col-1 d-flex align-items-center"><a href="#">Gestion Reservas</a></div>
-    <div class="col-1 d-flex align-items-center"><a href="cerrarsesion.php">Cerrar Sesion</a></div>
-    <div id="logo" class="col-auto offset-auto">
+    <div class="col-12 col-sm-1 d-flex align-items-center"><a href="consultarTemporadas.php">Gestion Temporada</a></div>
+    <div class="col-12 col-sm-1 d-flex align-items-center"><a href="#">Gestion Tipo De Habitacion</a></div>
+    <div class="col-12 col-sm-1 d-flex align-items-center"><a href="#">Gestion Habitaciones </a></div>
+    <div class="col-12 col-sm-1 d-flex align-items-center"><a href="#"> Gestion Ofertas</a></div>
+    <div class="col-12 col-sm-1 d-flex align-items-center"><a href="#">Gestion Reservas</a></div>
+    <div class="col-12 col-sm-1 d-flex align-items-center"><a href="cerrarsesion.php">Cerrar Sesion</a></div>
+    <div id="logo" class="col-auto offset-auto d-none d-sm-block">
         <img src="imagenes/logo2.PNG">
     </div>
 </nav>
@@ -46,13 +47,13 @@
             require_once 'metodos.php';
             $objConexion=new metodos();
 
-            /*
+            /**
              * Extrae todas las temporadas de la base de datos
              */
             $consulta="SELECT * FROM temporada";
             $objConexion->realizarConsultas($consulta);
 
-            /*
+            /**
              * Comprueba si se han obtenido resultados para crear las tablas
              */
             if($objConexion->comprobarSelect()>0){
@@ -86,7 +87,7 @@
         </table>
     </div>';
             }
-            /*
+            /**
              * Formulario para añadir o modificar temporadas
              */
         ?>
@@ -111,7 +112,7 @@
 
 <script>
 
-    /*
+    /**
     * Comprueba si se ha pulsado
     */
     function comprobarSubmit(boton){
@@ -126,7 +127,7 @@
             alert("Introduzca un año válido");
             return false;
         }
-        /*
+        /**
         * Si se ha pulsado el botón añadir, comprueba que el año no esté en la base de datos
         */
         if(opcion==1){
@@ -150,7 +151,7 @@
         }
         else
         {
-            /*
+            /**
             * Si se ha pulsado el botón modificar, se comprueba que el año esté en la base de datos
              */
             $.ajax({
