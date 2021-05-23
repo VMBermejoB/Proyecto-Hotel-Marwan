@@ -31,6 +31,9 @@
 require_once  'metodos.php';
 $objMetodos=new metodos();
 
+/**
+ * Selecciona los tipos
+ */
     $consulta=
         "
             SELECT idTipo,nombre 
@@ -68,7 +71,11 @@ $objMetodos=new metodos();
                             <label for="planta">Introduce el tipo de la habitación</label><br>
                             <select class="form-select" aria-label="Default select example" name="tipo" id="tipo" onblur="validacion()">
                             <option selected="true" disabled="disabled" value="-1">Seleccione el tipo de habitacion</option>
-        ';                  while ($fila=$objMetodos->extraerFilas())
+        ';
+        /**
+         * Se extraen cada una de las filas de los tipos para mostrarlos en el select
+         */
+                            while ($fila=$objMetodos->extraerFilas())
                             {
                                 echo '<option name="'.$fila["nombre"].'" value="'.$fila["idTipo"].'">'.$fila["nombre"].'</option> ';
                             }
@@ -90,6 +97,10 @@ $objMetodos=new metodos();
 
 
 if(isset($_POST["enviar"])){
+
+    /**
+     * Se insertan los datos en la tabla de habitaciones
+     */
  $consulta=
  "
     INSERT INTO habitaciones(numHabitacion, planta, capacidad, dimesiones, idTipo, adaptada)
@@ -122,6 +133,16 @@ $objMetodos->realizarConsultas($consulta);
 </body>
 </html>
 <script>
+
+    /**
+     *
+     * @returns {boolean}
+     */
+
+    /**
+     *
+     * Comprueba si la habitación existe
+     */
     function validacion()
     {
         let numHabitacion = document.getElementById("numHabitacion").value;
