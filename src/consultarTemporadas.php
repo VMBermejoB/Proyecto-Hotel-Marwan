@@ -1,12 +1,16 @@
 <?php
-    /**
-    * Comprueba que se ha iniciado sesión con perfil trabajador
-    */
+/**
+ * Comprobación de perfiles
+ */
     session_start();
-    if($_SESSION["perfil"]!="t"){
-        header("Location:disenio.php");
+
+    if(!isset($_SESSION["perfil"])){
+        header("Location:index.php");
     }
 
+    if($_SESSION["perfil"]!="t"){
+        header("Location:index.php");
+    }
 ?>
 <html lang="es">
 <head>
@@ -21,17 +25,20 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6" crossorigin="anonymous">
 
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 </head>
 <body>
 <nav class="row">
-    <div class="col-12 col-sm-1 d-flex align-items-center"><a href="consultarTemporadas.php">Gestion Temporada</a></div>
-    <div class="col-12 col-sm-1 d-flex align-items-center"><a href="#">Gestion Tipo De Habitacion</a></div>
-    <div class="col-12 col-sm-1 d-flex align-items-center"><a href="#">Gestion Habitaciones </a></div>
-    <div class="col-12 col-sm-1 d-flex align-items-center"><a href="#"> Gestion Ofertas</a></div>
-    <div class="col-12 col-sm-1 d-flex align-items-center"><a href="#">Gestion Reservas</a></div>
+
+    <div class="col-6 col-sm-2 col-xl-1 d-flex align-items-center"><a href="consultarTemporadas.php">Temporadas</a></div>
+    <div class="col-6 col-sm-1 d-flex align-items-center"><a href="mostrarTipo.php">Tipos</a></div>
+    <div class="col-6 col-sm-2 col-xl-1 d-flex align-items-center"><a href="mostrarHabitaciones.php">Habitaciones </a></div>
+    <div class="col-6 col-sm-1 d-flex align-items-center"><a href="precio.php">Precios </a></div>
+    <div class="col-6 col-sm-1 d-flex align-items-center"><a href="mostrarOfertas.php">Ofertas</a></div>
+    <div class="col-6 col-sm-1 d-flex align-items-center"><a href="mostrarReserva.php">Reservas</a></div>
     <div class="col-12 col-sm-1 d-flex align-items-center"><a href="cerrarsesion.php">Cerrar Sesion</a></div>
-    <div id="logo" class="col-auto offset-auto d-none d-sm-block">
+    <div id="logo" class="col-auto offset-auto d-none d-md-block d-flex align-items-center">
         <img src="imagenes/logo2.PNG">
     </div>
 </nav>
@@ -72,12 +79,22 @@
                     </thead>
                     ';
                 for($i=0;$i<$fila=$objConexion->extraerFilas();$i++){
+
+                    /**
+                     * Cambio de formato de fecha
+                     */
+
+                    $tfIn=explode("-", $fila["fInicioTemp"]);
+                    $fIn=$tfIn[2]."/".$tfIn[1]."/".$tfIn[0];
+
+                    $tfFin=explode("-", $fila["fFinTemp"]);
+                    $fFin=$tfFin[2]."/".$tfFin[1]."/".$tfFin[0];
                     echo'
                     
                       <tr>           
                         <td>'.$fila["nombre"].'</td>
-                        <td>'.$fila["fInicioTemp"].'</td>
-                        <td>'.$fila["fFinTemp"].'</td>
+                        <td>'.$fIn.'</td>
+                        <td>'.$fFin.'</td>
                         <td>'.$fila["anio"].'</td>
                       </tr>
        ';
@@ -124,7 +141,21 @@
 
 
         if(/^\d{4}$/.test(anio)===false){
-            alert("Introduzca un año válido");
+            Swal.fire({
+                title:"Error",
+                icon:"error",
+                text:"Introduzca un año válido",
+                confirmButtonText: "Aceptar",
+                confirmButtonColor: "#011d40",
+                allowOutsideClick: false,
+                allowEscapeKey: false,
+                allowEnterKey: false,
+                stopKeydownPropagation:false,
+            }).then((result) => {
+                if (result.isConfirmed) {
+
+                }
+            });
             return false;
         }
         /**
@@ -138,7 +169,21 @@
                 dataType: "text",
                 success: function(respuesta) {
                     if(respuesta==1){
-                        alert("El año ya existe, introduzca otro");
+                        Swal.fire({
+                            title: "Error",
+                            icon:"error",
+                            text:"El año ya existe",
+                            confirmButtonText: "Aceptar",
+                            confirmButtonColor: "#011d40",
+                            allowOutsideClick: false,
+                            allowEscapeKey: false,
+                            allowEnterKey: false,
+                            stopKeydownPropagation:false,
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+
+                            }
+                        });
                         return false;
                     }
                     else
@@ -161,7 +206,21 @@
                 dataType: "text",
                 success: function(respuesta) {
                     if(respuesta==0){
-                        alert("Para modificar introduzca un año existente");
+                        Swal.fire({
+                            title:"Error",
+                            icon:"error",
+                            text:"Para modificar elija un año diferente",
+                            confirmButtonText: "Aceptar",
+                            confirmButtonColor: "#011d40",
+                            allowOutsideClick: false,
+                            allowEscapeKey: false,
+                            allowEnterKey: false,
+                            stopKeydownPropagation:false,
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+
+                            }
+                        });
                         return false;
                     }
                     else

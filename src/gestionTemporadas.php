@@ -1,8 +1,18 @@
 <?php
+/**
+ * Comprobación de perfiles
+ */
     session_start();
-    if($_SESSION["perfil"]!="t"){
-        header("Location:disenio.php");
+
+    if(!isset($_SESSION["perfil"])){
+        header("Location:index.php");
     }
+
+    if($_SESSION["perfil"]!="t"){
+        header("Location:index.php");
+    }
+
+
 ?>
 <html lang="es">
 <head>
@@ -21,18 +31,19 @@
     <link rel="stylesheet" href="/resources/demos/style.css">
     <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body>
-
-
 <nav class="row">
-    <div class="col-12 col-sm-1 d-flex align-items-center"><a href="consultarTemporadas.php">Temporadas</a></div>
-    <div class="col-12 col-sm-1 d-flex align-items-center"><a href="#">Tipos</a></div>
-    <div class="col-12 col-sm-1 d-flex align-items-center"><a href="#">Habitaciones </a></div>
-    <div class="col-12 col-sm-1 d-flex align-items-center"><a href="#">Ofertas</a></div>
-    <div class="col-12 col-sm-1 d-flex align-items-center"><a href="#">Reservas</a></div>
+
+    <div class="col-6 col-sm-2 col-xl-1 d-flex align-items-center"><a href="consultarTemporadas.php">Temporadas</a></div>
+    <div class="col-6 col-sm-1 d-flex align-items-center"><a href="mostrarTipo.php">Tipos</a></div>
+    <div class="col-6 col-sm-2 col-xl-1 d-flex align-items-center"><a href="mostrarHabitaciones.php">Habitaciones </a></div>
+    <div class="col-6 col-sm-1 d-flex align-items-center"><a href="precio.php">Precios </a></div>
+    <div class="col-6 col-sm-1 d-flex align-items-center"><a href="mostrarOfertas.php">Ofertas</a></div>
+    <div class="col-6 col-sm-1 d-flex align-items-center"><a href="mostrarReserva.php">Reservas</a></div>
     <div class="col-12 col-sm-1 d-flex align-items-center"><a href="cerrarsesion.php">Cerrar Sesion</a></div>
-    <div id="logo" class="col-auto offset-auto d-none d-sm-block">
+    <div id="logo" class="col-auto offset-auto d-none d-md-block d-flex align-items-center">
         <img src="imagenes/logo2.PNG">
     </div>
 </nav>
@@ -57,24 +68,26 @@
                 }
 
 
-
                 if(isset($_POST["modificar"])){
-                    $consulta="DELETE FROM temporada WHERE anio=".$anio;
-                    $objConexion->realizarConsultas($consulta);
+                    $opcion=1;
 
+
+                }
+                else{
+                    $opcion=2;
                 }
                 echo'
                 <form method="post" action="'.$objProcesos->anadirTemporadas().'">
                     <h2>Fechas de temporadas</h2>
                     <input type="hidden" id="anio" name="anio" value="'.$anio.'">
+                    <input type="hidden" id="opcion" name="opcion" value="'.$opcion.'">
                     <div class="form-group row justify-content-center">
                      
-                        <label for="fIn1" class="col-6">Inicio temporada Media</label>
-                        <label for="fFin1" class="col-6">Final temporada Media</label>
+                        <label for="fIn1" class="col-6">Inicio temporada Baja</label>
+                        <label for="fFin1" class="col-6">Final temporada Baja</label>
                        
                         <input type="text" class="col-5" id="fIn1" autocomplete="off" onkeydown="return false" name="fIn1" value="01/01/'.$anio.'" readonly required>                   
-                        <input type="text" class="offset-1 col-5" id="datepicker" autocomplete="off" name="fFin1" onchange="fecha()" onkeydown="return false" required></p>
-
+                        <input type="text" class="offset-1 col-5" id="datepicker" autocomplete="off" name="fFin1" onchange="fecha1()" onkeydown="return false" required></p>
                        
                     </div>
                     <div class="form-group row justify-content-center">
@@ -82,12 +95,12 @@
                         <label for="fFin2" class="col-6">Final temporada Alta</label>
                         
                         <input type="text" class="col-5" id="fIn2" name="fIn2" autocomplete="off" onkeydown="return false" readonly required>
-                        <input type="text" class="offset-1 col-5" id="datepicker2" name="fFin2" onchange="fecha2()"autocomplete="off" onkeydown="return false" required>
+                        <input type="text" class="offset-1 col-5" id="datepicker2" name="fFin2" onchange="fecha2()" autocomplete="off" onkeydown="return false" required>
                     </div>
                    
                     <div class="form-group row justify-content-center">
-                        <label for="fIn3" class="col-6" >Inicio temporada Baja</label>
-                        <label for="fFin3" class="col-6">Final temporada Baja</label>
+                        <label for="fIn3" class="col-6" >Inicio temporada Media</label>
+                        <label for="fFin3" class="col-6">Final temporada Media</label>
                         
                         <input type="text" class="col-5" id="fIn3" name="fIn3" autocomplete="off" onkeydown="return false" readonly required>
                          <input type="text" class="offset-1 col-5" id="fFin3" name="fFin3" value="31/12/'.$anio.'" autocomplete="off" onkeydown="return false" readonly required>
@@ -120,11 +133,12 @@
 
     } );
 
-    function fecha(){
-        fIn1=document.getElementById("fIn1").value;
+    function fecha1(){
+
+        var fIn1=document.getElementById("fIn1").value;
         fIn1=new Date(fIn1);
 
-        fecha=document.getElementById("datepicker").value;
+        var fecha=document.getElementById("datepicker").value;
         var partesfecha = fecha.split("/");
         fecha=new Date(+partesfecha[2], partesfecha[1] - 1, +partesfecha[0]);
         fecha.setDate(fecha.getDate()+1);
@@ -133,6 +147,8 @@
         document.getElementById("fIn2").value = fecha;
 
         fecha=new Date(+partesfecha[2], partesfecha[1] - 1, +partesfecha[0]);
+
+        $('#datepicker2').datepicker('destroy');
 
         $( function() {
             $( "#datepicker2" ).datepicker({

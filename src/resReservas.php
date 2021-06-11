@@ -1,12 +1,31 @@
 <?php
     session_start();
+/**
+ * Comprobación de perfiles de usuario
+ */
+    if(!isset($_SESSION["perfil"])){
+        header("Location:index.php");
+    }
 
     if($_SESSION["perfil"]!='u'){
-        header("Location:disenio.php");
+        header("Location:index.php");
     }
-//    if (($_SERVER['HTTP_REFERER'] != "http://localhost/ejercicios/disenioProyecto2/proyecto/reservas.php")){
-//        header("Location:reservas.php");
-//    }
+
+
+/**
+ * Ocultar botón de pago al realizarlo, si no se ha realizado se comprueba si ha recibido los datos
+ */
+    if(!isset($_POST["enviar3"])){
+
+        if(!isset($_POST["fIn"]) || !isset($_POST["fFin"]) || !isset($_POST["num"]) || !isset($_POST["libres"])){
+            header("Location:index.php");
+        }
+
+        if(empty($_POST["fIn"]) || empty($_POST["fFin"]) || empty($_POST["num"]) || empty($_POST["libres"])){
+            header("Location:index.php");
+        }
+    }
+
 ?>
 <html lang="es">
 <head>
@@ -32,17 +51,20 @@
     <link rel="stylesheet" href="/resources/demos/style.css">
     <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 </head>
 <body>
 <nav class="row">
-    <div class="col-12 col-sm-1 d-flex align-items-center"><a href="#">Quienes Somos</a></div>
-    <div class="col-12 col-sm-1 d-flex align-items-center"><a href="#">Noticias</a></div>
-    <div class="col-12 col-sm-1 d-flex align-items-center"><a href="#">Habitaciones</a></div>
-    <div class="col-12 col-sm-1 d-flex align-items-center"><a href="#"> Actividades</a></div>
-    <div class="col-12 col-sm-1 d-flex align-items-center"><a href="gestionUsuarios.php">Gestión de usuario</a></div>
+    <div class="col-12 col-sm-1 d-flex align-items-center"><a href="index.php#donde">Donde estamos</a></div>
+    <div class="col-12 col-sm-1 d-flex align-items-center"><a href="index.php#serv">Servicios</a></div>
+    <div class="col-12 col-sm-1 d-flex align-items-center"><a href="habitaciones.php">Habitaciones</a></div>
+    <div class="col-12 col-sm-1 d-flex align-items-center"><a href="reservas.php">Reservas</a></div>
+    <div class="col-12 col-sm-1 d-flex align-items-center"><a href="gestionUsuarios.php">Usuario</a></div>
     <div class="col-12 col-sm-1 d-flex align-items-center"><a href="cerrarsesion.php">Cerrar Sesion</a></div>
     <div id="logo" class="col-auto offset-auto d-none d-sm-block">
-        <img src="imagenes/logo2.PNG">
+        <img src="imagenes/logo2.PNG" alt="logo">
     </div>
 </nav>
 <main class="row" id="contenedor">
@@ -108,7 +130,8 @@
                             /**
                              * Extraer precios de cada habitación según temporada, tipo y ofertas
                              */
-                            while($fecha<=$fFin){
+
+                            while($fecha<$fFin){
                                 $consulta="SELECT idTemporada FROM temporada WHERE ".$fecha2." BETWEEN fInicioTemp AND fFinTemp";
 
                                 $objConexion->realizarConsultas($consulta);
@@ -122,7 +145,9 @@
                                 $precioTemp=$objConexion->extraerFilas();
 
 
-                                $consulta="SELECT o.porcentaje FROM oferta o INNER JOIN ofertatipo ot ON ot.idOferta = o.idOferta WHERE ot.idTipo=".$tipo[0]." AND ".$fecha2." BETWEEN o.fInicio AND o.fFin";
+                                $consulta="SELECT o.porcentaje 
+                                FROM oferta o                   
+                                WHERE o.idTipo=".$tipo[0]." AND ".$fecha2." BETWEEN o.fInicio AND o.fFin";
 
                                 $objConexion->realizarConsultas($consulta);
 
@@ -146,7 +171,8 @@
 
                             echo'
                                     <label for="precios">Precio total habitación '.$habitaciones[$i].'</label>
-                                    <input type="text" class="col-12" id="precios" name="precios[]" value="'.$precio.'" readonly>
+                                    <input type="text" class="col-12" id="precios" name="precios[]" value="'.$precio.' €"  readonly>
+                                    
 
                                     <input type="hidden" id="habitaciones" name="habitaciones[]" value="'.$habitaciones[$i].'">';
 
@@ -157,20 +183,24 @@
                             $tfecha2 = explode("-", $fecha);
                             $fecha2=$tfecha2[0]."".$tfecha2[1]."".$tfecha2[2];
                         }
+
                             echo '
                                     <h4>Total</h4>
                                     <label for="total"></label>
-                                    <input type="text" id="total" class="col-12" name="total" value="'.$pTotal.'" readonly>
+                                    <input type="text" id="total" class="col-12" name="total" value="'.$pTotal.' €" readonly>
                                     
                                     <div class="row justify-content-center">
-                                      <a href="reservas.php" class="btn btn-primary col-3"> Volver</a>
+                                      <a href="reservas.php" id="volver" class="btn btn-primary col-3"> Volver</a>
                                     </div>
-                                    <input type="submit" class="btn btn-primary" name="enviar3" value="Confirmar"/>
+                                                                   
+                                    <input type="submit" name="enviar3" id="enviar3" value="Confirmar"/>
+                                    <div id="smart-button-container">
+                                        <div style="text-align: center;">
+                                            <div id="paypal-button-container"></div>
+                                        </div>
+                                    </div>
                              </form>';
-
-
                 ?>
-
 
         </div>
     </article>
@@ -188,7 +218,7 @@
             <p> via Verona 149, angolo con via Verdi 1 - 25019<br/>
                 Lugana di Sirmione (BS) Lago di Garda Italia<br/>
                 Tel +39 030 919026 - Fax +39 030 9196039<br/>
-                dogana@hoteldogana.it<br/>
+                marwan@hotelmarwan.it<br/>
                 P.IVA 04324930231
             </p>
         </div>
@@ -199,3 +229,71 @@
 
 </body>
 </html>
+<script src="https://www.paypal.com/sdk/js?client-id=sb&currency=EUR" data-sdk-integration-source="button-factory"></script>
+<script>
+
+    $('#enviar3').hide();
+
+    function initPayPalButton() {
+        paypal.Buttons({
+            style: {
+                shape: 'pill',
+                color: 'blue',
+                layout: 'vertical',
+                label: 'checkout',
+
+            },
+
+            createOrder: function(data, actions) {
+                return actions.order.create({
+                    purchase_units: [{"description":"Habitaciones","amount":{"currency_code":"EUR","value":<?php echo $pTotal?>}}]
+                });
+            },
+
+            onApprove: function(data, actions) {
+                return actions.order.capture().then(function(details) {
+
+                    $('#paypal-button-container').hide();
+                    $('#enviar3').click();
+                    Swal.fire({
+                        title:"Éxito",
+                        icon:"success",
+                        text:"La reserva se ha realizado correctamente",
+                        confirmButtonText:"Aceptar",
+                        confirmButtonColor: "#011d40",
+                        allowOutsideClick: false,
+                        allowEscapeKey: false,
+                        allowEnterKey: false,
+                        stopKeydownPropagation:false,
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            setTimeout(function(){ window.location.replace("reservas.php"); }, 1000);
+                        }
+                    });
+
+
+                });
+            },
+
+            onError: function(err) {
+                Swal.fire({
+                    title:"Error",
+                    icon:"error",
+                    text:"Se ha producido un error al realizar la reserva",
+                    confirmButtonText:"Aceptar",
+                    confirmButtonColor: "#011d40",
+                    allowOutsideClick: false,
+                    allowEscapeKey: false,
+                    allowEnterKey: false,
+                    stopKeydownPropagation:false,
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        setTimeout(function(){ window.location.replace("reservas.php"); }, 1000);
+                    }
+                });
+                console.log(err);
+            }
+        }).render('#paypal-button-container');
+    }
+    initPayPalButton();
+</script>

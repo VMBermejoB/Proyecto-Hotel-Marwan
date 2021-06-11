@@ -1,8 +1,15 @@
 <?php
+/**
+ * Comprobación de perfiles
+ */
     session_start();
 
-    if($_SESSION["perfil"]!='u'){
-        header("Location:disenio.php");
+    if(!isset($_SESSION["perfil"])){
+        header("Location:index.php");
+    }
+
+    if($_SESSION["perfil"]!="u"){
+        header("Location:index.php");
     }
 ?>
 <html lang="es">
@@ -34,19 +41,21 @@
 
 
 <nav class="row">
-    <div class="col-12 col-sm-1 d-flex align-items-center"><a href="consultarTemporadas.php">Temporada</a></div>
-    <div class="col-12 col-sm-1 d-flex align-items-center"><a href="#">Tipo</a></div>
-    <div class="col-12 col-sm-1 d-flex align-items-center"><a href="#">Habitaciones </a></div>
-    <div class="col-12 col-sm-1 d-flex align-items-center"><a href="#">Ofertas</a></div>
-    <div class="col-12 col-sm-1 d-flex align-items-center"><a href="#">Reservas</a></div>
+    <div class="col-12 col-sm-1 d-flex align-items-center"><a href="index.php#donde">Donde estamos</a></div>
+    <div class="col-12 col-sm-1 d-flex align-items-center"><a href="index.php#serv">Servicios</a></div>
+    <div class="col-12 col-sm-1 d-flex align-items-center"><a href="habitaciones.php">Habitaciones</a></div>
+    <div class="col-12 col-sm-1 d-flex align-items-center"><a href="reservas.php">Reservas</a></div>
+    <div class="col-12 col-sm-1 d-flex align-items-center"><a href="gestionUsuarios.php">Usuario</a></div>
     <div class="col-12 col-sm-1 d-flex align-items-center"><a href="cerrarsesion.php">Cerrar Sesion</a></div>
     <div id="logo" class="col-auto offset-auto d-none d-sm-block">
-        <img src="imagenes/logo2.PNG">
+        <img src="imagenes/logo2.PNG" alt="logo">
     </div>
+</nav>
 </nav>
 <main class="row" id="contenedor">
     <article class="row">
         <div class="col-12">
+
             <?php
             require 'procesosApp.php';
                 $objProcesos=new procesosApp();
@@ -54,18 +63,136 @@
                 require_once 'metodos.php';
                 $objConexion=new metodos();
 
+
+
                 if(!isset($_POST["enviar"])){
-                  echo' <form action="reservas.php" method="post">
-                
-                <h2>Reservas</h2>
-                <hr>
-                <div class="form-group">
-                    <label for="num">¿Cuántas habitaciones quieres?</label>
-                   
-                    <input type="number" class="form-control" id="num" name="num" required min="1"/></br>
-                </div>
-               <input type="submit" class="btn btn-primary" name="enviar" value="enviar"/>
-            </form>';
+
+                    /**
+                     * Formulario de número de habitaciones
+                     */
+
+                    $consulta="SELECT * from habitaciones";
+
+                    $objConexion->realizarConsultas($consulta);
+
+                    /**
+                     * Si no hay habitaciones, devuelve a la página de inicio
+                     */
+
+                    if($objConexion->comprobarSelect()>0){
+                       echo' <div class="row justify-content-center">
+                         <form action="reservas.php" class="col-6" method="post">
+                        
+                        <h2>Realizar Reservas</h2>
+                        <hr>
+                        <div class="form-group">
+                            <label for="num">¿Cuántas habitaciones quieres?</label>
+                           
+                            <input type="number" class="form-control" id="num" name="num" required min="1"/></br>
+                        </div>
+                       <input type="submit" class="btn btn-primary" name="enviar" value="enviar"/>
+                    </form>
+                    </div>';
+                    }
+                    else
+                    {
+                        echo'<script>
+                        
+                         Swal.fire({
+                            title:"Error",
+                            icon:"error",
+                            text:"No hay habitaciones disponibles para reservar",
+                            confirmButtonText:"Aceptar",
+                            confirmButtonColor: "#011d40",
+                            allowOutsideClick: false,
+                            allowEscapeKey: false,
+                            allowEnterKey: false,
+                            stopKeydownPropagation:false,
+                            
+                        }).then((result) => {
+                        if (result.isConfirmed) {
+                            window.location.replace("index.php");
+                        }
+                    })
+                         
+                        </script>
+                       ';
+                    }
+
+
+
+
+                    /**
+                     * Mostrar reservas realizadas por el cliente
+                     */
+
+                    $consulta="SELECT r.idReserva,u.nombre,u.correo,r.fInicio,r.fFin
+                        FROM reservas r
+                        INNER JOIN
+                        usuarios u
+                        ON r.idUsuario=u.idUsuario
+                        WHERE r.idUsuario=".$_SESSION["id"]."
+                        ORDER BY r.fInicio DESC";
+
+
+                    $objConexion->realizarConsultas($consulta);
+                    /**
+                    * Comprueba si se han encontrado reservas realizadas, en el caso de ser así se muestran
+                     */
+                    if($objConexion->comprobarSelect()>0){
+
+                        $numReservas=$objConexion->comprobarSelect();
+
+
+                        echo'
+                            <div class="row justify-content-center">
+                            <h1 class="col-auto">Mis reservas</h1>
+
+                         <table class="table table-striped table-hover" >
+                                    <thead>
+                                        <tr>
+                                          <th scope="col">Nombre</th>
+                                          <th scope="col">Correo</th>
+                                          <th scope="col">Fecha llegada</th>
+                                          <th scope="col">Fecha salida</th>
+                                          <th scope="col">Descargar</th>
+                                          <th scope="col">Cancelar</th>
+                                        </tr>
+                                    </thead>';
+
+
+                        for($i=0;$i<$fila=$objConexion->extraerFilas();$i++){
+
+                            $tfIn=explode("-", $fila["fInicio"]);
+                            $fIn=$tfIn[2]."/".$tfIn[1]."/".$tfIn[0];
+
+                            $tfFin=explode("-", $fila["fFin"]);
+                            $fFin=$tfFin[2]."/".$tfFin[1]."/".$tfFin[0];
+
+                            echo'
+                          <tbody class="table-striped">
+                                 <tr>
+                                    <th>'.$fila["nombre"].'</th>
+                                    <td>'.$fila["correo"].'</td>
+                                    <td>'.$fIn.'</td>
+                                    <td >'.$fFin.'</td>
+                                    <td><button type="button" class="btn btn-secondary info" ><a href="generarPdf.php?reserva='.$fila["idReserva"].'"><img src="imagenes/iconos/pdf.png"></a></button></td>
+                                    <td><button type="button" class="btn btn-secondary info" ><img src="imagenes/iconos/papelera.png"></button></td>
+                                </tr>';
+
+                        }
+                        echo'
+                        
+                            </tbody>
+                             </table>
+                        </div>';
+
+                        }
+
+
+
+
+
                 }
                 else {
                     echo '<form action="resReservas.php" onsubmit="return validarHab()" method="post">
@@ -139,7 +266,7 @@
             <p> via Verona 149, angolo con via Verdi 1 - 25019<br/>
                 Lugana di Sirmione (BS) Lago di Garda Italia<br/>
                 Tel +39 030 919026 - Fax +39 030 9196039<br/>
-                dogana@hoteldogana.it<br/>
+                marwan@hotelmarwan.it<br/>
                 P.IVA 04324930231
             </p>
         </div>
@@ -149,6 +276,7 @@
 </body>
 </html>
 <script>
+
     $( function() {
         $( "#datepicker" ).datepicker({
             minDate: new Date(),
@@ -158,11 +286,14 @@
     } );
 
     function activar(){
-
+/**
+ * Se activa este datepicker cuando se modifica el de fecha de inicio
+ */
         var fecha=document.getElementById("datepicker").value;
         document.getElementById("datepicker2").value="";
         var partesfecha = fecha.split("/");
         fecha=new Date(+partesfecha[2], partesfecha[1] - 1, +partesfecha[0]);
+        fecha.setDate(fecha.getDate()+1);
 
         $('#datepicker2').datepicker('destroy');
 
@@ -174,8 +305,9 @@
 
         } );
     }
-
-
+/**
+ * Generación de Pdf
+ */
 
 
 
@@ -189,10 +321,12 @@
         var hab=[];
         var adaptada=[];
 
+        var numAdaptadas=0;
+
 /**
 *   Inicializo el array para que así no de error al pasarlo por ajax
 */
-        hab[0]=1;
+        hab[0]=0;
 
 /**
 * Guardo todos los tipos en un array
@@ -211,7 +345,12 @@
             {
                 adaptada[i]=document.getElementById("adno"+i).value;
             }
-            alert(adaptada[i]);
+        }
+
+        for(i=0;i<num;i++){
+            if(adaptada[i]==1){
+                numAdaptadas++;
+            }
         }
 
 
@@ -221,7 +360,7 @@
              */
             var ocupadas=hab.join('-');
             $.ajax({
-                url: "comprobarHab.php?tipo="+tipos[i]+"&fIn="+fIn+"&fFin="+fFin+"&ocupadas="+ocupadas+"&adaptada="+adaptada[i],
+                url: "comprobarHab.php?tipo="+tipos[i]+"&fIn="+fIn+"&fFin="+fFin+"&ocupadas="+ocupadas+"&adaptada="+adaptada[i]+"&numAdaptadas="+numAdaptadas,
                 method: "get",
                 async: false,
                 dataType: "text",
@@ -236,16 +375,31 @@
         }
 
         if(cont==num){
-            alert("Hay habitaciones libres");
             for(i=0;i<num;i++)
             {
+
                 document.getElementsByName("libres[]")[i].value=hab[i];
             }
             return true;
         }
         else
         {
-            alert("No hay habitaciones libres");
+            Swal.fire({
+                title:"Error",
+                icon:"error",
+                text:"No hay habitaciones disponibles",
+                confirmButtonText:"Aceptar",
+                confirmButtonColor: "#011d40",
+                allowOutsideClick: false,
+                allowEscapeKey: false,
+                allowEnterKey: false,
+                stopKeydownPropagation:false,
+
+            }).then((result) => {
+                if (result.isConfirmed) {
+
+                }
+            });
             return false;
         }
 

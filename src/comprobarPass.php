@@ -8,7 +8,6 @@
     $pass1=$_GET["pass1"];
 
     $sentencia = $objMetodos->mysqli->prepare("SELECT password FROM usuarios WHERE idUsuario=".$_SESSION["id"]);
-//    $sentencia->bind_param("s", $correo);
     $sentencia->execute();
 
     $resultado=$sentencia->get_result();

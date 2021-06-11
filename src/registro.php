@@ -1,3 +1,14 @@
+<?php
+/**
+ * Comprobación de perfiles
+ */
+    session_start();
+
+    if(isset($_SESSION["perfil"])){
+        header("Location:index.php");
+    }
+
+?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -12,25 +23,27 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6" crossorigin="anonymous">
 
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+
+    <script src="sweetalert2.all.min.js"></script>
 </head>
 <body>
 
 <nav class="row">
-    <div class="col-12 col-sm-1 d-flex align-items-center"><a href="#">Quienes Somos</a></div>
-    <div class="col-12 col-sm-1 d-flex align-items-center"><a href="#">Noticias</a></div>
-    <div class="col-12 col-sm-1 d-flex align-items-center"><a href="#">Habitaciones</a></div>
-    <div class="col-12 col-sm-1 d-flex align-items-center"><a href="registro.php"> Registro</a></div>
+    <div class="col-12 col-sm-1 d-flex align-items-center"><a href="index.php#donde">Donde estamos</a></div>
+    <div class="col-12 col-sm-1 d-flex align-items-center"><a href="index.php#serv">Servicios</a></div>
+    <div class="col-12 col-sm-1 d-flex align-items-center"><a href="habitaciones.php">Habitaciones</a></div>
+    <div class="col-12 col-sm-1 d-flex align-items-center"><a href="index.php#contacto">Contactenos</a></div>
     <div class="col-12 col-sm-1 d-flex align-items-center"><a href="iniciosesion.php">Inicio Sesión</a></div>
     <div id="logo" class="col-auto offset-auto d-none d-sm-block">
-        <img src="imagenes/logo2.PNG">
+        <img src="imagenes/logo2.PNG" alt="logo">
     </div>
 </nav>
 
 <div class="containter" >
     <main class="row" id="contenedor">
 
-        <article class="row">
-            <div class="col-12">
+        <article class="row justify-content-center">
+            <div class="col-8">
                     <?php
                         require 'procesosApp.php';
                         $objProcesos=new procesosApp();
@@ -48,6 +61,9 @@
                         </div>
                         <div class="form-group">
                             <label for="pass">Contraseña: </label>
+                            <button type="button" class="btn btn-secondary info" data-bs-toggle="tooltip" data-bs-placement="top" title="La contraseña debe tener como mínimo de 8 letras, con al menos un símbolo, letras mayúsculas y minúsculas y un número.">
+                                <img src="imagenes/iconos/informacion.png">
+                            </button>
                             <input name="pass" class="form-control" id="pass" type="password" required/>
                         </div>
                         <div class="form-group">
@@ -66,10 +82,7 @@
                             <label for="respuesta">Respuesta: </label>
                             <input name="respuesta" class="form-control" id="respuesta" type="text" required/>
                         </div>
-<!--                        <label for="tlfno">Teléfono: </label>-->
-<!--                        <input name ="tlfno" id="tlfno" type="text"/>-->
-<!--                        <label for="tlfno">Teléfono: </label>-->
-<!--                        <input name ="tlfno" id="tlfno" type="text"/>-->
+
                         <br/><br/>
 
                         <input type="submit" class="btn btn-primary" name="enviar" value="Registrarse"><br>
@@ -94,7 +107,7 @@
                 <p> via Verona 149, angolo con via Verdi 1 - 25019<br/>
                     Lugana di Sirmione (BS) Lago di Garda Italia<br/>
                     Tel +39 030 919026 - Fax +39 030 9196039<br/>
-                    dogana@hoteldogana.it<br/>
+                    marwan@hotelmarwan.it<br/>
                     P.IVA 04324930231
                 </p>
             </div>
@@ -113,57 +126,77 @@
     *Validaciones del formulario de registro
      */
     function validacion(){
-        /**
-        *Validaciones campos vacíos
-         */
         let nombre = document.getElementById("nombre").value;
-        if(nombre == null || nombre.length === 0 || /^\s+$/.test(nombre) ) {
-            alert("Introduce todos los datos");
-            return false;
-            
-        }
-
         let correo = document.getElementById("correo").value;
-        if(correo == null || correo.length === 0 || /^\s+$/.test(correo) ) {
-            alert("Introduce todos los datos");
-            return false;
-        }
-
         let pass = document.getElementById("pass").value;
-        if(pass == null || pass.length === 0 || /^\s+$/.test(pass) ) {
-            alert("Introduce todos los datos");
-            return false;
-        }
-
         let pass2 = document.getElementById("pass2").value;
-        if(pass2 == null || pass2.length === 0 || /^\s+$/.test(pass2) ) {
-            alert("Introduce todos los datos");
+        let tlfno = document.getElementById("tlfno").value;
+
+        if(/^(?=.*\d)(?=.*[!@#$\-\_%^&*])(?=.*[a-z])(?=.*[A-Z]).{8,}$/.test(pass)==false){
+
+
+            Swal.fire({
+                title:"Error",
+                icon:"error",
+                confirmButtonColor: "#011d40",
+                confirmButtonText:"Aceptar",
+                text:"La contraseña debe tener como mínimo de 8 letras, con al menos un símbolo, letras mayúsculas y minúsculas y un número.",
+                allowOutsideClick: false,
+                allowEscapeKey: false,
+                allowEnterKey: false,
+                stopKeydownPropagation:false,
+            });
+
+
             return false;
         }
 
-        let tlfno = document.getElementById("tlfno").value;
-        if(tlfno == null || tlfno.length === 0 || /^\s+$/.test(tlfno)){
-            alert("Introduce todos los datos");
-            return false;
-        }
         /**
         *Validación correo correcto
          */
         if(/^[67]\d{8}$/.test(tlfno)===false)
         {
-            alert("Introduce el teléfono correctamente");
+
+            Swal.fire({
+                title:"Error",
+                icon:"error",
+                confirmButtonText:"Aceptar",
+                confirmButtonColor: "#011d40",
+                text:"Introduce el teléfono correctamente",
+                allowOutsideClick: false,
+                allowEscapeKey: false,
+                allowEnterKey: false,
+                stopKeydownPropagation:false,
+
+            });
+
             return false;
         }
         /**
         *Validación para ver si las contraseñas son iguales
          */
         if(pass!==pass2){
-            alert("Las contraseñas no coinciden");
+
+            Swal.fire({
+                title:"Error",
+                icon:"error",
+                confirmButtonText:"Aceptar",
+                confirmButtonColor: "#011d40",
+                text:"Las contraseñas no coinciden",
+                allowOutsideClick: false,
+                allowEscapeKey: false,
+                allowEnterKey: false,
+                stopKeydownPropagation:false,
+            });
+
+
             return false;
         }
+
         /**
         *Comprobación de correo para ver si está repetido
          */
+
         var val=0;
         $.ajax({
             url: "comprobarCorreo.php?correo="+correo,
@@ -172,12 +205,22 @@
             dataType: "text",
             success: function(respuesta) {
                 if(respuesta==1){
-                    alert("El usuario ya existe");
+
+                    Swal.fire({
+                        title:"Error",
+                        icon:"error",
+                        confirmButtonText:"Aceptar",
+                        confirmButtonColor: "#011d40",
+                        text:"El usuario ya existe",
+                        allowOutsideClick: false,
+                        allowEscapeKey: false,
+                        allowEnterKey: false,
+                        stopKeydownPropagation:false,
+                    });
                     return false;
                 }
                 else
                 {
-                    alert("Registro Completado");
                     val=1;
                 }
             }
@@ -188,6 +231,7 @@
         }
         else
         {
+
             return false;
         }
 

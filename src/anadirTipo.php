@@ -1,11 +1,16 @@
 <?php
-    /**
-    * Comprueba que se ha iniciado sesión con perfil trabajador
-    */
-    session_start();
-    if($_SESSION["perfil"]!="t"){
-        header("Location:disenio.php");
-    }
+/**
+ * Comprobación de perfiles
+ */
+session_start();
+
+if(!isset($_SESSION["perfil"])){
+    header("Location:index.php");
+}
+
+if($_SESSION["perfil"]!="t"){
+    header("Location:index.php");
+}
 ?>
 <!doctype html>
 <html lang="es">
@@ -20,23 +25,27 @@
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6" crossorigin="anonymous">
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body>
 <nav class="row">
-    <div class="col-12 col-sm-1 d-flex align-items-center"><a href="consultarTemporadas.php">Temporada</a></div>
-    <div class="col-12 col-sm-1 d-flex align-items-center"><a href="mostrarTipo.php">Tipo</a></div>
-    <div class="col-12 col-sm-1 d-flex align-items-center"><a href="#">Habitaciones </a></div>
-    <div class="col-12 col-sm-1 d-flex align-items-center"><a href="#"> Ofertas</a></div>
-    <div class="col-12 col-sm-1 d-flex align-items-center"><a href="#">Reservas</a></div>
+
+    <div class="col-6 col-sm-2 col-xl-1 d-flex align-items-center"><a href="consultarTemporadas.php">Temporadas</a></div>
+    <div class="col-6 col-sm-1 d-flex align-items-center"><a href="mostrarTipo.php">Tipos</a></div>
+    <div class="col-6 col-sm-2 col-xl-1 d-flex align-items-center"><a href="mostrarHabitaciones.php">Habitaciones </a></div>
+    <div class="col-6 col-sm-1 d-flex align-items-center"><a href="precio.php">Precios </a></div>
+    <div class="col-6 col-sm-1 d-flex align-items-center"><a href="mostrarOfertas.php">Ofertas</a></div>
+    <div class="col-6 col-sm-1 d-flex align-items-center"><a href="mostrarReserva.php">Reservas</a></div>
     <div class="col-12 col-sm-1 d-flex align-items-center"><a href="cerrarsesion.php">Cerrar Sesion</a></div>
-    <div id="logo" class="col-auto offset-auto d-none d-sm-block">
+    <div id="logo" class="col-auto offset-auto d-none d-md-block d-flex align-items-center">
         <img src="imagenes/logo2.PNG">
     </div>
 </nav>
+
 <?php
 require_once  'metodos.php';
 $objMetodos=new metodos();
-if(!isset($_POST["enviar"])){
+
     echo '
         <div class="containter" >
         <main class="row" id="contenedor">
@@ -47,11 +56,11 @@ if(!isset($_POST["enviar"])){
                     <hr>
                     <div class="form-group">
                         <label for="nombre">Introduce el tipo de habitación</label><br>
-                        <input type="text" class="form-control" name="nombre" id="nombre" placeholder="Introduce el tipo de habitacion" required/>
+                        <input type="text" class="form-control" name="nombre" id="nombre" placeholder="Introduce el tipo de habitacion" maxlength="30" required/>
                         <label for="descripcion">Introduce la descripción del tipo de habitación</label><br>
-                            <input type="text" class="form-control" name="descripcion" id="descripcion" placeholder="Introduce la descripcion del tipo de habitacion" required/>
+                            <input type="text" class="form-control" name="descripcion" id="descripcion" placeholder="Introduce la descripcion del tipo de habitacion" maxlength="300" required/>
                         <div class="form-group">
-                            <input type="file" class="form-control" id="archivo[]" name="archivo[]" multiple="" required><br>
+                            <input type="file" class="form-control" id="archivo[]" name="archivo[]" multiple="" accept="image/png,image/jpeg" required><br>
                         </div>
                     </div>
                      <input type="submit" class="btn btn-primary" name="enviar" value="enviar"/>
@@ -62,91 +71,215 @@ if(!isset($_POST["enviar"])){
             </main>
         </div>
      ';
-}
-else
-{
+if(isset($_POST["enviar"])) {
 
-/**
- * Recogemos la variables del formulario $_POST["nombre"] y $_POST["descripcion"];
- */
+    if(!isset($_POST["nombre"]) || empty($_POST["nombre"]) || !isset($_POST["descripcion"]) || empty($_POST["descripcion"])){
+        echo '<script>
+                        Swal.fire({
+                        title:"Error",
+                        icon:"error",
+                        text:"Rellene todos los campos",
+                        confirmButtonText:"Aceptar",
+                        confirmButtonColor: "#011d40",
+                        allowOutsideClick: false,
+                        allowEscapeKey: false,
+                        allowEnterKey: false,
+                        stopKeydownPropagation:false,
+                    });
+                    </script>';
+    }
+    else
+    {
+        /**
+         * Recogemos la variables del formulario $_POST["nombre"] y $_POST["descripcion"];
+         */
 
-$nombre=$_POST["nombre"];
-$descripcion=$_POST["descripcion"];
+        $nombre = $_POST["nombre"];
+        $descripcion = $_POST["descripcion"];
 
-/**
- * Ejecutamos consulta preparada
- */
+        /**
+         * Comprobamos que los archivos seleccionados son de formato imagen
+         */
 
-    $sentencia = $objMetodos->mysqli->prepare("INSERT INTO tipo(nombre, descripcion) VALUES (?,?)");
-    $sentencia->bind_param("ss", $nombre,$descripcion);
-    $resultado=$sentencia->execute();
-    $id=$sentencia->insert_id;
-    echo $id;
+        $validar = 0;
 
-    foreach ($_FILES["archivo"]['tmp_name'] as $archivos =>$tmp_name){
+        $extensiones = array('jpg', 'png');
+        foreach ($_FILES["archivo"]['tmp_name'] as $archivos => $tmp_name) {
 
-        if($_FILES["archivo"]["name"][$archivos]) {
-            $nombrearchivo = $_FILES["archivo"]["name"][$archivos];
-            $path = "archivos/".$nombrearchivo;
+            $fileNameCmps = explode(".", $_FILES["archivo"]["name"][$archivos]);
+            $extension = strtolower(end($fileNameCmps));
 
-            copy($_FILES['archivo']['tmp_name'][$archivos], $path);
-            if (file_exists($path)) {
-
-                $sentencia = $objMetodos->mysqli->prepare(" INSERT INTO imagenes (nombre) VALUES (?)");
-                $sentencia->bind_param("s", $path);
-                $sentencia->execute();
-                $idImagen=$sentencia->insert_id;
-
-                $consulta="INSERT INTO imagenestipos (idTipo, idImagen) VALUES (".$id.",".$idImagen.")";
-                $sentencia = $objMetodos->mysqli->prepare("INSERT INTO imagenestipos (idTipo, idImagen) VALUES (?,?)");
-                $sentencia->bind_param("ii", $id, $idImagen);
-                $sentencia->execute();
-
-                if($objMetodos->comprobar()<=0){
-                    echo '<script>
-                               alert("Error al subir los archivos");
-                               </script>';
+            if ($validar == 0) {
+                if (in_array($extension, $extensiones)) {
+                    $validar = 0;
+                } else {
+                    $validar = 1;
                 }
             }
-            else
-            {
-                echo '<script>
-                               alert("Error al subir los archivos");
-                               </script>';
-            }
+
         }
-    }
-    /**
-     * Comprobamos si hay temporadas al crear los tipos
-     */
-    $consulta=
-        "
+
+        /**
+         * Si los archivos subidos no son imagenes, muestra mensaje de error y no permite continuar con el proceso
+         */
+        if ($validar == 1) {
+            echo '<script>
+                              Swal.fire({
+                             title: "Error",
+                            icon:"error",
+                            text:"Solo se permite formato imagen",
+                            confirmButtonText: "Aceptar",
+                            confirmButtonColor: "#011d40",
+                            allowOutsideClick: false,
+                            allowEscapeKey: false,
+                            allowEnterKey: false,
+                            stopKeydownPropagation:false,
+                            })
+                     
+                               </script>';
+        } else {
+            /**
+             * Ejecutamos consulta preparada
+             */
+
+            $sentencia = $objMetodos->mysqli->prepare("INSERT INTO tipo(nombre, descripcion) VALUES (?,?)");
+            $sentencia->bind_param("ss", $nombre, $descripcion);
+            $resultado = $sentencia->execute();
+            $id = $sentencia->insert_id;
+            echo $id;
+
+            $validar = 0;
+
+            foreach ($_FILES["archivo"]['tmp_name'] as $archivos => $tmp_name) {
+
+                if ($validar == 0) {
+
+
+                    if ($_FILES["archivo"]["name"][$archivos]) {
+                        $nombrearchivo = $_FILES["archivo"]["name"][$archivos];
+                        $path = "archivos/" . $nombrearchivo;
+
+                        $extension = pathinfo($nombrearchivo, PATHINFO_EXTENSION);
+
+
+
+                        copy($_FILES['archivo']['tmp_name'][$archivos], $path);
+                        if (file_exists($path)) {
+
+                            $sentencia = $objMetodos->mysqli->prepare(" INSERT INTO imagenes (nombre, idTipo) VALUES (?,?)");
+                            $sentencia->bind_param("si", $path, $id);
+                            $sentencia->execute();
+//                            $idImagen = $sentencia->insert_id;
+//                            $sentencia = $objMetodos->mysqli->prepare("INSERT INTO imagenestipos (idTipo, idImagen) VALUES (?,?)");
+//                            $sentencia->bind_param("ii", $id, $idImagen);
+//                            $sentencia->execute();
+
+                            if ($objMetodos->comprobar() <= 0) {
+                                $validar = 1;
+                                echo '<script>
+                              Swal.fire({
+                             title: "Error",
+                            icon:"error",
+                            text:"Error al subir los archivos",
+                            confirmButtonText: "Aceptar",
+                            confirmButtonColor: "#011d40",
+                            allowOutsideClick: false,
+                            allowEscapeKey: false,
+                            allowEnterKey: false,
+                            stopKeydownPropagation:false,
+                        });
+                               </script>';
+                            }
+                        } else {
+                            echo '<script>
+                                Swal.fire({
+                             title: "Error",
+                            icon:"error",
+                            text:"Error al subir los archivos",
+                            confirmButtonColor: "#011d40",
+                            confirmButtonText: "Aceptar",
+                            allowOutsideClick: false,
+                            allowEscapeKey: false,
+                            allowEnterKey: false,
+                            stopKeydownPropagation:false,
+                        });
+                </script>';
+                            $validar = 1;
+                        }
+
+                    }
+                }
+            }
+            /**
+             * Comprobamos si hay temporadas al crear los tipos
+             */
+            $consulta =
+                "
             SELECT *
             FROM temporada;
         ";
 
-    $objMetodos->realizarConsultas($consulta);
+            $objMetodos->realizarConsultas($consulta);
 
-    if($objMetodos->comprobarSelect()>0)
-    {
-        $prueba=$objMetodos->comprobarSelect();
-        for ($i=0;$i<$prueba;$i++)
-        {
-            $fila[$i]=$objMetodos->extraerFilas();
+            if ($objMetodos->comprobarSelect() > 0) {
+                $prueba = $objMetodos->comprobarSelect();
+                for ($i = 0; $i < $prueba; $i++) {
+                    $fila[$i] = $objMetodos->extraerFilas();
+                }
+                $sentencia = $objMetodos->mysqli->prepare("INSERT INTO temporadaTipo(idTipo, idTemporada) VALUES (?,?)");
+                for ($i = 0; $i < $prueba; $i++) {
+                    $sentencia->bind_param("ss", $id, $fila[$i]["idTemporada"]);
+                    $resultado = $sentencia->execute();
+                }
+                echo
+                '
+            <script>
+                Swal.fire({
+            title:"Éxito",
+            icon: "success",
+            text:"Se ha añadido el tipo con extio, Usted será redigido a la asignación de los precios, para asignar el precio a el nuevo tipo creado",
+            confirmButtonColor: "#011d40",
+            confirmButtonText:"Aceptar",
+            allowOutsideClick: false,
+            allowEscapeKey: false,
+            allowEnterKey: false,
+            stopKeydownPropagation:false,
+        }).then((result) => {
+            if (result.isConfirmed) {
+                window.top.location="precio.php";
+            }
+        })
+            </script>
+        ';
+            } else {
+                echo
+                '
+            <script>
+             Swal.fire({
+             title:"Éxito",
+            icon: "success",
+          confirmButtonText: "Aceptar",
+          confirmButtonColor: "#011d40",
+            text:"El Tipo de habitación se ha añadido correctamente, pero no hay temporadas añadidas, usted será redigido a la creación de temporadas",
+            allowOutsideClick: false,
+            allowEscapeKey: false,
+            allowEnterKey: false,
+            stopKeydownPropagation:false,
+        }).then((result) => {
+            if (result.isConfirmed) {
+                window.top.location="gestionTemporadas.php";
+            }
+        })
+            </script>
+        ';
+            }
         }
-        $sentencia = $objMetodos->mysqli->prepare("INSERT INTO temporadaTipo(idTipo, idTemporada) VALUES (?,?)");
-        for ($i=0;$i<$prueba;$i++)
-        {
-            $sentencia->bind_param("ss", $id,$fila[$i]["idTemporada"]);
-            $resultado=$sentencia->execute();
-        }
-        header("Location: precio.php");
     }
-    else
-    {
-        header("Location:consultarTemporadas.php");
-    }
+
+
 }
+
+
 ?>
 
 
@@ -168,12 +301,21 @@ $descripcion=$_POST["descripcion"];
             success: function(respuesta) {
                 if (respuesta == 1) {
                     val=1;
-                    alert("El tipo de habitacion "+nombre+" ya existe, inserte otro distinto");
-                    window.location="anadirTipo.php";
-                }
-                else
-                {
-                    window.location="anadirTipo.php";
+                    Swal.fire({
+                        title:"Error",
+                        icon:"error",
+                        text:"El tipo de habitación ya existe, inserte otro distinto",
+                        confirmButtonText: "Aceptar",
+                        confirmButtonColor: "#011d40",
+                        allowOutsideClick: false,
+                        allowEscapeKey: false,
+                        allowEnterKey: false,
+                        stopKeydownPropagation:false,
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            window.location="anadirTipo.php";
+                        }
+                    });
                 }
             }
         });

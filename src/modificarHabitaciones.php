@@ -1,9 +1,19 @@
 <?php
-    if($_SESSION["perfil"]!='t'){
-        header("Location:disenio.php");
+/**
+ * Comprobación de perfiles
+ */
+session_start();
+
+    if(!isset($_SESSION["perfil"])){
+        header("Location:index.php");
     }
-    if (($_SERVER['HTTP_REFERER'] != "http://localhost/ejercicios/disenioProyecto2/proyecto/reservas.php")){
-        header("Location:reservas.php");
+
+    if($_SESSION["perfil"]!="t"){
+        header("Location:index.php");
+    }
+
+    if(!isset($_GET["numHabitacion"]) || empty($_GET["numHabitacion"])){
+        header("Location:index.php");
     }
 ?>
 
@@ -20,15 +30,19 @@
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6" crossorigin="anonymous">
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body>
 <nav class="row">
-    <div class="col-12 col-sm-1 d-flex align-items-center"><a href="consultarTemporadas.php">Temporada</a></div>
-    <div class="col-12 col-sm-1 d-flex align-items-center"><a href="mostrarTipo.php">Tipo</a></div>
-    <div class="col-12 col-sm-1 d-flex align-items-center"><a href="#">Habitaciones </a></div>
-    <div class="col-12 col-sm-1 d-flex align-items-center"><a href="#">Ofertas</a></div>
+
+    <div class="col-6 col-sm-2 col-xl-1 d-flex align-items-center"><a href="consultarTemporadas.php">Temporadas</a></div>
+    <div class="col-6 col-sm-1 d-flex align-items-center"><a href="mostrarTipo.php">Tipos</a></div>
+    <div class="col-6 col-sm-2 col-xl-1 d-flex align-items-center"><a href="mostrarHabitaciones.php">Habitaciones </a></div>
+    <div class="col-6 col-sm-1 d-flex align-items-center"><a href="precio.php">Precios </a></div>
+    <div class="col-6 col-sm-1 d-flex align-items-center"><a href="mostrarOfertas.php">Ofertas</a></div>
+    <div class="col-6 col-sm-1 d-flex align-items-center"><a href="mostrarReserva.php">Reservas</a></div>
     <div class="col-12 col-sm-1 d-flex align-items-center"><a href="cerrarsesion.php">Cerrar Sesion</a></div>
-    <div id="logo" class="col-auto offset-auto d-none d-sm-block">
+    <div id="logo" class="col-auto offset-auto d-none d-md-block d-flex align-items-center">
         <img src="imagenes/logo2.PNG">
     </div>
 </nav>
@@ -40,7 +54,7 @@
                     <h3 id="mensaje"></h3>
                 </div>
 <?php
-require_once  'metodos.php';
+require_once 'metodos.php';
 $objMetodos=new metodos();
 
 $consulta=
@@ -70,9 +84,9 @@ if ($objMetodos->comprobarSelect()>0) {
             FROM tipo
         ";
     $objMetodos->realizarConsultas($consulta2);
-    if (!isset($_POST["enviar"])) {
+
         echo '              
-                <form onsubmit="return validacion2()" action="#" method="post">
+                <form onsubmit="return validacion()" action="#" method="post">
                 <h2>Modificar habitación</h2>
                 <hr>
               
@@ -81,19 +95,19 @@ if ($objMetodos->comprobarSelect()>0) {
          
                 <div class="form-group">
                      <label for="nombre">Número de habitación</label>
-                     <input type="text" id="numHabitacion" class="form-control" name="numHabitacion" placeholder="Numero de habitacion" value="' . $numHabitacion . '" required onblur="validacion()"/></br>
+                     <input type="number" id="numHabitacion" class="form-control" name="numHabitacion" placeholder="Numero de habitacion" value="' . $numHabitacion . '" min="1" max="999" required "/></br>
                 </div>
                 <div class="form-group">
                             <label for="planta">Introduce la planta de la habitación</label><br>
-                            <input type="number" class="form-control" name="planta" value="' . $planta . '" id="planta" placeholder="Introduce la planta de la habitación" required min="1"/>
+                            <input type="number" class="form-control" minlength="1" maxlength="3" name="planta" value="' . $planta . '" id="planta" placeholder="Introduce la planta de la habitación" required min="1" max="9"/>
                         </div>
                          <div class="form-group">
                             <label for="capacidad">Introduce la capacidad de la habitación</label><br>
-                            <input type="number" class="form-control" name="capacidad" value="' . $capacidad . '" id="capacidad" placeholder="Introduce la capacidad de la habitación" required min="1"/>
+                            <input type="number" class="form-control" name="capacidad" value="' . $capacidad . '" id="capacidad" placeholder="Introduce la capacidad de la habitación" required min="1" max="9"/>
                         </div>
                         <div class="form-group">
                             <label for="dimension">Introduce la dimension de la habitación</label><br>
-                            <input type="number" class="form-control" name="dimension" value="' . $dimension . '" id="dimension" placeholder="Introduce la dimension de la habitación" required min="1"/>
+                            <input type="number" class="form-control" name="dimension" value="' . $dimension . '" id="dimension" placeholder="Introduce la dimension de la habitación" required min="1" max="255"/>
                         </div>
                         <div class="form-group">
                             <label for="planta">Introduce el tipo de la habitación</label><br>
@@ -135,31 +149,71 @@ if ($objMetodos->comprobarSelect()>0) {
         echo '</form>
 
             ';
-    }
-    else
-    {
-        $consulta =
-            "
-                UPDATE habitaciones
-                SET numHabitacion='" . $_POST["numHabitacion"] . "',planta='" . $_POST["planta"] . "',capacidad='" . $_POST["capacidad"] . "',dimesiones='" . $_POST["dimension"] . "',idTipo=" . $_POST["tipo"] . ",adaptada=" . $_POST["adaptada"] . " 
-                WHERE numHabitacion=" . $_POST["numHabitacionBD"] . ";
-           ";
-        echo $consulta;
+    if (isset($_POST["enviar"])) {
 
-        $objMetodos->realizarConsultas($consulta);
-        if($objMetodos->comprobar()<=0){
-            echo'<script>
-                        document.getElementById("mensaje").innerHTML="Error al añadir la habitación, intentelo de nuevo más tarde";
-                        var el = document.getElementById("mensajeConf");
-                        el.style.display="block";
+        if(!isset($_POST["numHabitacion"]) || empty($_POST["numHabitacion"]) || !isset($_POST["planta"]) || empty($_POST["planta"]) ||
+            !isset($_POST["capacidad"]) || empty($_POST["capacidad"]) || !isset($_POST["dimension"]) || empty($_POST["dimension"]) ||
+            !isset($_POST["tipo"]) || empty($_POST["tipo"])){
+
+            echo '<script>
+                        Swal.fire({
+                        title:"Error",
+                        icon:"error",
+                        text:"Rellene todos los campos",
+                        confirmButtonText:"Aceptar",
+                        confirmButtonColor: "#011d40",
+                        allowOutsideClick: false,
+                        allowEscapeKey: false,
+                        allowEnterKey: false,
+                        stopKeydownPropagation:false,
+                    });
                     </script>';
-
         }
-        else
-        {
-            header("location:mostrarHabitaciones.php");
-        }
+        else {
+            $consulta =
+                "
+                    UPDATE habitaciones
+                    SET numHabitacion='" . $_POST["numHabitacion"] . "',planta='" . $_POST["planta"] . "',capacidad='" . $_POST["capacidad"] . "',dimesiones='" . $_POST["dimension"] . "',idTipo=" . $_POST["tipo"] . ",adaptada=" . $_POST["adaptada"] . " 
+                    WHERE numHabitacion=" . $_POST["numHabitacionBD"] . ";
+               ";
 
+            $objMetodos->realizarConsultas($consulta);
+            if ($objMetodos->comprobar() < 0) {
+                echo '<script>
+                 Swal.fire({
+                title:"Error",
+                icon:"error",
+                text:"Error al modificar la habitación",
+                confirmButtonColor: "#011d40",
+                confirmButtonText:"Aceptar",
+                allowOutsideClick: false,
+                allowEscapeKey: false,
+                allowEnterKey: false,
+                stopKeydownPropagation:false,
+                 })
+                        </script>';
+
+            } else {
+                echo '<script>
+                 Swal.fire({
+                 title:"Éxito",
+                icon:"success",
+                text:"La habitación se ha modificado con éxito",
+                confirmButtonText: "Aceptar",
+                confirmButtonColor: "#011d40",
+                allowOutsideClick: false,
+                allowEscapeKey: false,
+                allowEnterKey: false,
+                stopKeydownPropagation:false,
+                 }).then((result) => {
+                if (result.isConfirmed) {
+                    window.top.location="mostrarHabitaciones.php";
+                }
+            })
+              </script>';
+
+            }
+        }
     }
 }
 ?>
@@ -189,43 +243,17 @@ if ($objMetodos->comprobarSelect()>0) {
                 success: function(respuesta) {
                     if (respuesta == 1) {
                         val=1;
-                        alert("El numero de habitacion "+numHabitacion+" ya existe, inserte otro distinto");
-                    }
-                }
-            });
-
-            if(val==1){
-                return false;
-            }
-            else
-            {
-                return true
-            }
-        }
-    }
-    function validacion2()
-    {
-        let numHabitacion = document.getElementById("numHabitacion").value;
-        let numHabitacionBD = document.getElementById("numHabitacionBD").value;
-        if(numHabitacion==numHabitacionBD)
-        {
-            alert("Se ha modificado la habitación "+numHabitacion+ " correctamente");
-            window.location="mostrarHabitaciones.php";
-            return true
-        }
-        else
-        {
-            let numHabitacion = document.getElementById("numHabitacion").value;
-            var val=0;
-            $.ajax({
-                url: "comprobarNumHab.php?numHabitacion="+numHabitacion,
-                method: "get",
-                async: false,
-                dataType: "text",
-                success: function(respuesta) {
-                    if (respuesta == 1) {
-                        val=1;
-                        alert("El numero de habitacion "+numHabitacion+" ya existe, inserte otro distinto");
+                        Swal.fire({
+                            title:"Error",
+                            icon:"error",
+                            text:"La habitación ya existe, elige otro distinto",
+                            confirmButtonText: "Aceptar",
+                            confirmButtonColor: "#011d40",
+                            allowOutsideClick: false,
+                            allowEscapeKey: false,
+                            allowEnterKey: false,
+                            stopKeydownPropagation:false,
+                        })
                     }
                 }
             });

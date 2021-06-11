@@ -1,6 +1,6 @@
 <?php
     define("servidor", "localhost");
-    define("usuario", "root");
-    define("password", "");
+    define("usuario", "HotelMarwan");
+    define("password", "123456");
     define("basedatos", "gestionhotel");
 ?>

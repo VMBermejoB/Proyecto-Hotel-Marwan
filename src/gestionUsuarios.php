@@ -1,8 +1,15 @@
 <?php
-
+/**
+ * Comprobación de perfiles
+ */
     session_start();
-    if (!isset($_SESSION["perfil"])) {
-        header("Location:disenio.php");
+
+    if(!isset($_SESSION["perfil"])){
+        header("Location:index.php");
+    }
+
+    if($_SESSION["perfil"]!="u"){
+        header("Location:index.php");
     }
 
 ?>
@@ -24,15 +31,15 @@
 
 </head>
 <body>
-
 <nav class="row">
-    <div class="col-12 col-sm-1 d-flex align-items-center"><a href="#">Quienes Somos</a></div>
-    <div class="col-12 col-sm-1 d-flex align-items-center"><a href="#">Noticias</a></div>
-    <div class="col-12 col-sm-1 d-flex align-items-center"><a href="#">Habitaciones</a></div>
-    <div class="col-12 col-sm-1 d-flex align-items-center"><a href="#"> Actividades</a></div>
-    <div class="col-12 col-sm-1 d-flex align-items-center"><a href="inicio.php">Inicio Sesión</a></div>
+    <div class="col-12 col-sm-1 d-flex align-items-center"><a href="index.php/#donde">Donde estamos</a></div>
+    <div class="col-12 col-sm-1 d-flex align-items-center"><a href="index.php/#serv">Servicios</a></div>
+    <div class="col-12 col-sm-1 d-flex align-items-center"><a href="habitaciones.php">Habitaciones</a></div>
+    <div class="col-12 col-sm-1 d-flex align-items-center"><a href="reservas.php">Reservas</a></div>
+    <div class="col-12 col-sm-1 d-flex align-items-center"><a href="gestionUsuarios.php">Usuario</a></div>
+    <div class="col-12 col-sm-1 d-flex align-items-center"><a href="cerrarsesion.php">Cerrar Sesion</a></div>
     <div id="logo" class="col-auto offset-auto d-none d-sm-block">
-        <img src="imagenes/logo2.PNG">
+        <img src="imagenes/logo2.PNG" alt="logo">
     </div>
 </nav>
 
@@ -113,14 +120,14 @@
                 /**
                  * Formulario para la baja de usuario
                  */
-                echo '<form method="post" onsubmit="return validarPass2()" action="'.$objProcesos->bajaUsuario().'">';
+                echo '<form method="post" id="baja" onsubmit="return validarPass2()" action="'.$objProcesos->bajaUsuario().'">';
                 ?>
                 <h1>Eliminar cuenta</h1>
                 <div class="form-group">
                     <label for="pass4">Introduzca contraseña para eliminar la cuenta</label>
-                    <input name ="pass4" class="form-control" id="pass4" type="text" required/>
+                    <input name ="pass4" class="form-control" id="pass4" type="password" required/>
                 </div>
-                <input type="submit" class="btn btn-primary" name="enviar2" value="Dar de baja"><br>
+                <input type="submit" class="btn btn-primary" name="enviar2" id="enviar2" value="Dar de baja"><br>
                 </form>
             </div>
         </article>
@@ -159,28 +166,30 @@
     function validacion(){
 
         let correoAct = document.getElementById("correo2").value;
+        let tlfno=document.getElementById("tlfno").value;
+        let correo=document.getElementById("correo").value;
 
-        let nombre = document.getElementById("nombre").value;
-        if(nombre == null || nombre.length === 0 || /^\s+$/.test(nombre) ) {
-            alert("Introduce todos los datos");
-            return false;
+        if(/^[67]\d{8}$/.test(tlfno)===false)
+        {
 
-        }
+            Swal.fire({
+                title:"Error",
+                icon:"error",
+                confirmButtonText:"Aceptar",
+                confirmButtonColor: "#011d40",
+                text:"Introduce un teléfono válido",
+                allowOutsideClick: false,
+                allowEscapeKey: false,
+                allowEnterKey: false,
+                stopKeydownPropagation:false,
 
-        let tlfno = document.getElementById("tlfno").value;
-        if(tlfno == null || tlfno.length === 0 || /^\s+$/.test(tlfno) ) {
-            alert("Introduce todos los datos");
-            return false;
-        }
+            });
 
-        let correo = document.getElementById("correo").value;
-        if(correo == null || correo.length === 0 || /^\s+$/.test(correo) ) {
-            alert("Introduce todos los datos");
             return false;
         }
 
         if(correoAct===correo){
-            alert("Modificación realizada con éxito");
+
             return true;
         }
         else
@@ -194,8 +203,22 @@
                 dataType: "text",
                 success: function(respuesta) {
                     if(respuesta==1){
-                        alert("Correo ya en uso");
-                        return false;
+
+                        Swal.fire({
+                            title:"Error",
+                            icon:"error",
+                            text:"Correo ya en uso",
+                            confirmButtonText: "Aceptar",
+                            confirmButtonColor: "#011d40",
+                            allowOutsideClick: false,
+                            allowEscapeKey: false,
+                            allowEnterKey: false,
+                            stopKeydownPropagation:false,
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+
+                            }
+                        });
                     }
                     else
                     {
@@ -215,13 +238,28 @@
         }
 
     }
-    /*
+    /**
     * Validaciones para la función de cambio de contraseña
     */
     function validarPass(){
         let pass1 = document.getElementById("pass1").value;
         let pass2 = document.getElementById("pass2").value;
         let pass3 = document.getElementById("pass3").value;
+
+        if(/^(?=.*\d)(?=.*[!@#$\-\_%^&*])(?=.*[a-z])(?=.*[A-Z]).{8,}$/.test(pass2)==false){
+            Swal.fire({
+                title:"Error",
+                icon:"error",
+                confirmButtonText:"Aceptar",
+                confirmButtonColor: "#011d40",
+                text:"La contraseña debe tener como mínimo de 8 letras, con al menos un símbolo, letras mayúsculas y minúsculas y un número.",
+                allowOutsideClick: false,
+                allowEscapeKey: false,
+                allowEnterKey: false,
+                stopKeydownPropagation:false,
+            });
+            return false;
+        }
 
         var val=0;
 
@@ -231,17 +269,45 @@
             async: false,
             dataType: "text",
             success: function(respuesta) {
-                alert(respuesta);
+
                 if(respuesta==0){
-                    alert("Contraseña incorrecta");
+                    Swal.fire({
+                    title:"Error",
+                        icon:"error",
+                        text:"Contraseña incorrecta",
+                        confirmButtonText: "Aceptar",
+                        confirmButtonColor: "#011d40",
+                        allowOutsideClick: false,
+                        allowEscapeKey: false,
+                        allowEnterKey: false,
+                        stopKeydownPropagation:false,
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+
+                        }
+                    });
                     return false;
                 }
                 else
                 {
 
                     if(pass2===pass3){
-                        alert("Contraseña modificada con éxito");
+
                         val=1;
+                    }
+                    else
+                    {
+                        Swal.fire({
+                            title:"Error",
+                            icon:"error",
+                            text:"Las contraseñas no coinciden",
+                            confirmButtonText: "Aceptar",
+                            confirmButtonColor: "#011d40",
+                            allowOutsideClick: false,
+                            allowEscapeKey: false,
+                            allowEnterKey: false,
+                            stopKeydownPropagation:false,
+                        });
                     }
                 }
             }
@@ -257,9 +323,33 @@
 
     }
 
-    /*
-    * Validar campos del formulario de baja de usuario
-    */
+    $('#enviar2').on('click',function(e){
+        e.preventDefault();
+        var form = $(this).parents('#baja');
+        Swal.fire({
+            icon: "warning",
+            text: "¿Deseas dar de baja el usuario?",
+            confirmButtonText:"Aceptar",
+            cancelButtonText: "Cancelar",
+            confirmButtonColor: "#011d40",
+            showCancelButton: true,
+            allowOutsideClick: false,
+            allowEscapeKey: false,
+            allowEnterKey: false,
+            stopKeydownPropagation:false,
+        }).then((result) => {
+
+            if (result.isConfirmed) {
+                form.submit();
+            }
+        })
+    });
+
+    /**
+     * Comprobación de contraseña para eliminar la cuenta
+     * @returns {boolean}
+     */
+
     function validarPass2(){
         let pass = document.getElementById("pass4").value;
 
@@ -271,40 +361,39 @@
             async: false,
             dataType: "text",
             success: function(respuesta) {
-                alert(respuesta);
 
                 if(respuesta==0){
-                    alert("Contraseña incorrecta");
+                    Swal.fire({
+                        title:"Error",
+                        icon:"error",
+                        text:"Contraseña incorrecta",
+                        confirmButtonText: "Aceptar",
+                        confirmButtonColor: "#011d40",
+                        allowOutsideClick: false,
+                        allowEscapeKey: false,
+                        allowEnterKey: false,
+                        stopKeydownPropagation:false,
+                    });
                 }
                 else
                 {
-                    let opcion=confirm("¿Está seguro de que desea eliminar la cuenta?");
+                    val=1;
 
-                    if(opcion==true){
-                        alert("Cuenta eliminada con éxito");
-                        val=1;
-                    }
-                    else
-                    {
-                        return false;
-                    }
                 }
             }
         });
 
-        if(val==1){
+        if(val==1) {
+
             return true;
         }
         else
         {
-            return false
+            return false;
         }
-        return false;
+
     }
 
 
 </script>
 
-
-
-</script>
